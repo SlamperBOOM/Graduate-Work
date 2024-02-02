@@ -10,8 +10,12 @@ import java.util.List;
 public class MSEError implements MathError{
 
     @Override
-    public double calcError(List<Double> reference, List<Double> actual) {
-        return 0;
+    public double calcError(List<Double> reference, List<Double> predicted) {
+        double sum = 0;
+        for(int i=0; i<reference.size(); ++i){
+            sum+= Math.pow(reference.get(i) - predicted.get(i), 2)/reference.size();
+        }
+        return sum;
     }
 
     @Override
@@ -21,6 +25,6 @@ public class MSEError implements MathError{
 
     @Override
     public double compareTo(double o1, double o2) {
-        return Double.compare(o1, o2);
+        return o1 < o2 ? 1 : -1;
     }
 }
