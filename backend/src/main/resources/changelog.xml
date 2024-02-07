@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <changeSet author="slamperboom" id="init db structure">
+        <createTable tableName="taxes">
+            <column name="id" autoIncrement="true" type="int8">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="tax_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="float8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="predictions">
+            <column name="id" autoIncrement="true" type="int8">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="tax_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="method_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="float8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="errors">
+            <column name="id" autoIncrement="true" type="int8">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="tax_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="method_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="error_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="error_value" type="float8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="parameters">
+            <column name="id" autoIncrement="true" type="int8">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="tax_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="method_name" type="varchar(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="params" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="tax_factor">
+            <column name="id" autoIncrement="true" type="int8">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="tax_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="factor_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="taxes">
+            <column name="tax_name" value="Test"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2024.01.15"/>
+            <column name="value" value="24.5461"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,28 +1,19 @@
 package com.slamperboom.backend.mathematics.results;
 
-public class MathErrorDTO {
-    String errorName;
-    double value;
-    Boolean isBetter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-    public MathErrorDTO(String errorName, double value) {
-        this.errorName = errorName;
-        this.value = value;
-    }
+@Getter
+@RequiredArgsConstructor
+@ToString
+public class MathErrorDTO {
+    private final String algorithmName;
+    private final String errorName;
+    private final double value;
+    private Boolean isBetter;
 
     public void setBetter(boolean better) {
         isBetter = better;
-    }
-
-    public String getErrorName() {
-        return errorName;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public boolean isBetter() {
-        return isBetter;
     }
 }

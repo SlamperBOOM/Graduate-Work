@@ -1,17 +1,19 @@
-package com.slamperboom.backend.mathematics.algorithms;
+package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 
+import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
+import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
+import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Component
-public class DoubleApproximation implements PrecisionAlgorithm{
+public class DoubleApproximation implements PredictionAlgorithm {
     private static final String methodName = "Double Approximation";
 
     @Override
-    public List<Double> makePrecision(AlgorithmValues referenceValues, AlgorithmParameters parameters) {
+    public List<Double> makePrediction(AlgorithmValues referenceValues, AlgorithmParameters parameters) {
         List<Double> reference = referenceValues.getReference();
         if(reference.size() < 3){
             throw new IllegalArgumentException();
@@ -54,7 +56,7 @@ public class DoubleApproximation implements PrecisionAlgorithm{
     @Override
     public String getDescription() {
         return """
-                
+                Метод двойного экспоненциального сглаживания
                 """;
     }
 
