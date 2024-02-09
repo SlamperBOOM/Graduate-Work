@@ -3,7 +3,7 @@ package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.errors.MSEError;
+import com.slamperboom.backend.mathematics.errors.MRSEError;
 import com.slamperboom.backend.mathematics.errors.MathError;
 import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -12,7 +12,6 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class LinearRegression implements PredictionAlgorithm {
@@ -43,7 +42,7 @@ public class LinearRegression implements PredictionAlgorithm {
         System.out.println(factorsTranspose);
         double[] weights = new double[factorsCount];
         double bestError = Double.MAX_VALUE;
-        MathError mathError = new MSEError();
+        MathError mathError = new MRSEError();
         double sigmoidParam = parameters.getParameter("sigmoidParam").get(0);
         double outputErrorParam = parameters.getParameter("outputErrorParam").get(0);
         for(double epochs : parameters.getParameter("epochs")){

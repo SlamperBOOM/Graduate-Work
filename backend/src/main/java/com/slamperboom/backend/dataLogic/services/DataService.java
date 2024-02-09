@@ -1,26 +1,28 @@
 package com.slamperboom.backend.dataLogic.services;
 
+import com.slamperboom.backend.dataLogic.entities.taxes.TaxType;
 import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
+import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
+import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
-import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.errors.MathError;
 import com.slamperboom.backend.mathematics.results.MathErrorDTO;
 import com.slamperboom.backend.mathematics.results.ResultDTO;
 import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class DataService {
+public class DataService implements IMathDataService, IControllerDataService {
     private final TaxService taxService;
     private final PredictionService predictionService;
-    private final Map<String, PredictionAlgorithm> implementedAlgorithms;
-    private final Map<String, MathError> implementedErrors;
+    private final ImplementedEntitiesService implementedEntitiesService;
 
+    @Override
     public AlgorithmValues fetchValuesForAlgorithm(String taxName){
         //достаем все значения для налога и его факторов (если есть) и обрезаем до минимального общего диапазона дат
         List<TaxView> taxValues = taxService.getValuesForTax(taxName);
@@ -61,31 +63,21 @@ public class DataService {
         return new AlgorithmValues(dates, reference, factors);
     }
 
+    @Override
     public List<List<MathErrorDTO>> getErrorsForTaxPredictions(String taxName){
         List<List<MathErrorDTO>> errors = new LinkedList<>();
-        for(String methodName: implementedAlgorithms.keySet()){
+        for(String methodName: implementedEntitiesService.getImplementedAlgorithmsNames()){
             errors.add(predictionService.getErrorsForPrediction(taxName, methodName));
         }
         return errors;
     }
 
-    public List<ResultDTO> getResultsForTax(String taxName){
-        List<List<MathErrorDTO>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
-        List<ResultDTO> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
-        for(ResultDTO resultDTO: results){
-            resultDTO.setMathErrors(errorsForAlgorithms.stream()
-                    .filter(l -> !l.isEmpty() && l.get(0).getAlgorithmName().equals(resultDTO.getMethodName()))
-                    .findFirst().orElse(new LinkedList<>())
-            );
-        }
-        return results;
-    }
-
+    @Override
     public List<ResultDTO> fetchResultsForTax(AlgorithmValues values, String taxName){
         List<ResultDTO> resultDTOlist = new LinkedList<>();
 
         List<List<PredictionView>> predictions = new LinkedList<>();
-        for(String methodName: implementedAlgorithms.keySet()) {
+        for(String methodName: implementedEntitiesService.getImplementedAlgorithmsNames()) {
             var result = predictionService.getPredictionForTaxAndMethod(taxName, methodName);
             if(!result.isEmpty()) {
                 predictions.add(result);
@@ -111,5 +103,44 @@ public class DataService {
         predictionService.savePredictionResult(taxName, methodName, dates, prediction);
         predictionService.saveErrorsForPrediction(taxName, predictionErrors);
         predictionService.saveParametersForPrediction(taxName, methodName, parameters);
+    }
+
+    @Override
+    public List<ResultDTO> getResultsForTax(String taxName){
+        List<List<MathErrorDTO>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
+        List<ResultDTO> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
+        for(ResultDTO resultDTO: results){
+            resultDTO.setMathErrors(errorsForAlgorithms.stream()
+                    .filter(l -> !l.isEmpty() && l.get(0).getAlgorithmName().equals(resultDTO.getMethodName()))
+                    .findFirst().orElse(new LinkedList<>())
+            );
+        }
+        return results;
+    }
+
+    @Override
+    public void parseFileAndAddTaxValues(MultipartFile file, String taxName) {
+        Map<Date, Double> values = parseValuesFromFile(file);
+        List<TaxCreateView> views = new LinkedList<>();
+        for(var entry: values.entrySet()){
+            views.add(new TaxCreateView(taxName, TaxType.TAX, entry.getKey(), entry.getValue()));
+        }
+        taxService.addTaxValueViaList(views);
+    }
+
+    @Override
+    public void parseFileAndAddFactorValues(MultipartFile file, String taxName) {
+        Map<Date, Double> values = parseValuesFromFile(file);
+        List<TaxCreateView> views = new LinkedList<>();
+        for(var entry: values.entrySet()){
+            views.add(new TaxCreateView(taxName, TaxType.FACTOR, entry.getKey(), entry.getValue()));
+        }
+        taxService.addTaxValueViaList(views);
+    }
+
+    private Map<Date, Double> parseValuesFromFile(MultipartFile file){
+        //TODO сделать парсинг файлов с данными
+        //Продумать формат файлов
+        return new HashMap<>();
     }
 }

@@ -3,7 +3,7 @@ package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.errors.MSEError;
+import com.slamperboom.backend.mathematics.errors.MRSEError;
 import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
 import org.apache.commons.math3.linear.*;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
@@ -117,7 +117,7 @@ public class ARIMA implements PredictionAlgorithm {
                         reverse.add(nextReverse);
                     }
 
-                    double error = new MSEError().calcError(references, reverse.get(reverse.size() - 1));
+                    double error = new MRSEError().calcError(references, reverse.get(reverse.size() - 1));
                     if (error < bestMSE) {
                         bestP = p;
                         bestD = d;

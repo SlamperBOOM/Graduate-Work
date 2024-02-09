@@ -1,6 +1,7 @@
 package com.slamperboom.backend.controllers;
 
 import com.slamperboom.backend.dataLogic.entities.taxes.TaxType;
+import com.slamperboom.backend.dataLogic.services.IControllerDataService;
 import com.slamperboom.backend.dataLogic.services.TaxService;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxFactorCreateView;
@@ -9,6 +10,7 @@ import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
 import com.slamperboom.backend.frontendDTO.TaxValueDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaxController {
     private final TaxService taxService;
+    private final IControllerDataService dataService;
 
     @GetMapping("values")
     public List<TaxView> getTaxByName(@RequestParam(name = "taxname") String taxName){
@@ -53,5 +56,13 @@ public class TaxController {
         taxService.saveTaxFactorLink(taxFactorLinkDTO);
     }
 
-    //добавить функцию добавления из файла
+    @PostMapping("add/tax/file")
+    public void addTaxValuesViaFile(@RequestParam("file") MultipartFile file, @RequestParam("taxname") String taxName){
+        dataService.parseFileAndAddTaxValues(file, taxName);
+    }
+
+    @PostMapping("add/factor/file")
+    public void addFactorValuesViaFile(@RequestParam("file") MultipartFile file, @RequestParam("taxname") String taxName){
+        dataService.parseFileAndAddTaxValues(file, taxName);
+    }
 }

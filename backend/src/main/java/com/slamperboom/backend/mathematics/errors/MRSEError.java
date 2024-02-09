@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 @Scope(value = "singleton")
-public class MSEError implements MathError{
+public class MRSEError implements MathError{
 
     @Override
     public double calcError(List<Double> reference, List<Double> predicted) {
@@ -23,7 +23,7 @@ public class MSEError implements MathError{
 
     @Override
     public String getName() {
-        return "MSE";
+        return "MRSE";
     }
 
     @Override

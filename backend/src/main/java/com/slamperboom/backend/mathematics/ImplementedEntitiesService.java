@@ -1,6 +1,7 @@
-package com.slamperboom.backend.mathematics.algorithms;
+package com.slamperboom.backend.mathematics;
 
 import com.slamperboom.backend.frontendDTO.AlgorithmDTO;
+import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import com.slamperboom.backend.mathematics.errors.MathError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,14 @@ public class ImplementedEntitiesService {
 
     public Collection<MathError> getImplementedErrors(){
         return implementedErrors.values();
+    }
+
+    public Collection<PredictionAlgorithm> getImplementedAlgorithms(){
+        return implementedAlgorithms.values();
+    }
+
+    public Collection<String> getImplementedAlgorithmsNames(){
+        return implementedAlgorithms.keySet();
     }
 
     public MathError getMathErrorByName(String name){

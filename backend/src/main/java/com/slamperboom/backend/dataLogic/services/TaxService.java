@@ -38,18 +38,6 @@ public class TaxService {
         return taxRepository.findTaxNames();
     }
 
-    public void addTaxValue(TaxCreateView createView){
-        taxRepository.save(taxMapper.fromCreateToTax(createView));
-    }
-
-    public void saveTaxValue(TaxView taxView){
-        taxRepository.save(taxMapper.fromViewToTax(taxView));
-    }
-
-    public void saveTaxFactorLink(TaxFactorCreateView createView){
-        taxFactorRepository.save(taxMapper.fromCreateToTaxFactor(createView));
-    }
-
     @Transactional(readOnly = true)
     public List<List<TaxView>> getFactorsForTax(String taxName){
         List<TaxFactor> factors = taxFactorRepository.findByTaxName(taxName);
@@ -60,5 +48,20 @@ public class TaxService {
             );
         }
         return factorsForTax;
+    }
+    public void addTaxValue(TaxCreateView createView){
+        taxRepository.save(taxMapper.fromCreateToTax(createView));
+    }
+
+    public void addTaxValueViaList(List<TaxCreateView> createViews){
+        taxRepository.saveAll(createViews.stream().map(taxMapper::fromCreateToTax).toList());
+    }
+
+    public void saveTaxValue(TaxView taxView){
+        taxRepository.save(taxMapper.fromViewToTax(taxView));
+    }
+
+    public void saveTaxFactorLink(TaxFactorCreateView createView){
+        taxFactorRepository.save(taxMapper.fromCreateToTaxFactor(createView));
     }
 }

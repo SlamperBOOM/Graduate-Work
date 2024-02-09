@@ -46,6 +46,8 @@ public class PredictionService {
         return errors.stream().map(predictionMapper::fromPredictionErrorToDTO).toList();
     }
 
+    //TODO проверить надобность выполнения flush
+
     public void savePredictionResult(String taxName, String methodName, List<Date> dates, List<Double> prediction){
         List<PredictionView> values = new LinkedList<>();
         for(int i=0; i<dates.size(); ++i){

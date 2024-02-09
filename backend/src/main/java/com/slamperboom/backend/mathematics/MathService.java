@@ -1,9 +1,8 @@
 package com.slamperboom.backend.mathematics;
 
-import com.slamperboom.backend.dataLogic.services.DataService;
+import com.slamperboom.backend.dataLogic.services.IMathDataService;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
-import com.slamperboom.backend.mathematics.algorithms.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import com.slamperboom.backend.mathematics.errors.MathError;
 import com.slamperboom.backend.mathematics.results.MathErrorDTO;
@@ -16,7 +15,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class MathService {
-    private final DataService dataService;
+    private final IMathDataService dataService;
     private final ImplementedEntitiesService implementedEntitiesService;
 
     public List<ResultDTO> makePrediction(String taxName, String methodName, List<String> params){
@@ -51,8 +50,6 @@ public class MathService {
                         );
             }
         }
-        System.out.println(predictionErrors);
-        System.out.println(errorOfOtherAlgorithms);
         //собираем ResultDTOs
         List<ResultDTO> results = new ArrayList<>();
         results.add(new ResultDTO(taxName,
