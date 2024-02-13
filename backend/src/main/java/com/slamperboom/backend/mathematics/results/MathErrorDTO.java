@@ -8,7 +8,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class MathErrorDTO {
-    private final String algorithmName;
+    private final String methodName;
     private final String errorName;
     private final double value;
     private Boolean isBetter;

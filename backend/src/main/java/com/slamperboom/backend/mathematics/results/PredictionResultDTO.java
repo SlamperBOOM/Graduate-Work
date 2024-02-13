@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @ToString
-public class ResultDTO {
+public class PredictionResultDTO {
     private final String taxName;
     private final String methodName;
     private List<SeriesValueDTO> referenceValues;
@@ -19,25 +19,25 @@ public class ResultDTO {
     private List<MathErrorDTO> mathErrors;
     private final List<ResultParameterDTO> parameters;
 
-    public ResultDTO(String taxName,
-                     String methodName,
-                     List<Date> dates,
-                     List<Double> referenceValues,
-                     List<Double> predictionValues,
-                     List<ResultParameterDTO> parameters) {
+    public PredictionResultDTO(String taxName,
+                               String methodName,
+                               List<Date> dates,
+                               List<Double> referenceValues,
+                               List<Double> predictionValues,
+                               List<ResultParameterDTO> parameters) {
         this.taxName = taxName;
         this.methodName = methodName;
         convertReferenceAndPrediction(dates, referenceValues, predictionValues);
         this.parameters = parameters;
     }
 
-    public ResultDTO(String taxName,
-                     String methodName,
-                     List<Date> dates,
-                     List<Double> referenceValues,
-                     List<Double> predictionValues,
-                     List<MathErrorDTO> mathErrors,
-                     List<ResultParameterDTO> parameters) {
+    public PredictionResultDTO(String taxName,
+                               String methodName,
+                               List<Date> dates,
+                               List<Double> referenceValues,
+                               List<Double> predictionValues,
+                               List<MathErrorDTO> mathErrors,
+                               List<ResultParameterDTO> parameters) {
         this.taxName = taxName;
         this.methodName = methodName;
         convertReferenceAndPrediction(dates, referenceValues, predictionValues);

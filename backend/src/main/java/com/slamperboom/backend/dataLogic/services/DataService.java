@@ -7,7 +7,7 @@ import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.results.MathErrorDTO;
-import com.slamperboom.backend.mathematics.results.ResultDTO;
+import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
 import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -73,8 +73,8 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     @Override
-    public List<ResultDTO> fetchResultsForTax(AlgorithmValues values, String taxName){
-        List<ResultDTO> resultDTOlist = new LinkedList<>();
+    public List<PredictionResultDTO> fetchResultsForTax(AlgorithmValues values, String taxName){
+        List<PredictionResultDTO> predictionResultDTOlist = new LinkedList<>();
 
         List<List<PredictionView>> predictions = new LinkedList<>();
         for(String methodName: implementedEntitiesService.getImplementedAlgorithmsNames()) {
@@ -87,11 +87,11 @@ public class DataService implements IMathDataService, IControllerDataService {
             String methodName = prediction.get(0).methodName();
             List<Date> dates = prediction.stream().map(PredictionView::date).toList();
             List<Double> predictionValues = prediction.stream().map(PredictionView::value).toList();
-            resultDTOlist.add(new ResultDTO(taxName,
+            predictionResultDTOlist.add(new PredictionResultDTO(taxName,
                     methodName, dates, values.getReference(),
                     predictionValues, predictionService.getParametersForPrediction(taxName, methodName)));
         }
-        return resultDTOlist;
+        return predictionResultDTOlist;
     }
 
     public void savePredictionResult(String taxName,
@@ -106,12 +106,12 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     @Override
-    public List<ResultDTO> getResultsForTax(String taxName){
+    public List<PredictionResultDTO> getResultsForTax(String taxName){
         List<List<MathErrorDTO>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
-        List<ResultDTO> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
-        for(ResultDTO resultDTO: results){
-            resultDTO.setMathErrors(errorsForAlgorithms.stream()
-                    .filter(l -> !l.isEmpty() && l.get(0).getAlgorithmName().equals(resultDTO.getMethodName()))
+        List<PredictionResultDTO> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
+        for(PredictionResultDTO predictionResultDTO : results){
+            predictionResultDTO.setMathErrors(errorsForAlgorithms.stream()
+                    .filter(l -> !l.isEmpty() && l.get(0).getMethodName().equals(predictionResultDTO.getMethodName()))
                     .findFirst().orElse(new LinkedList<>())
             );
         }

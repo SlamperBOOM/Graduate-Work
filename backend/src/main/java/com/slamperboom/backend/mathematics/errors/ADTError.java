@@ -33,7 +33,7 @@ public class ADTError implements MathError{
                 }else if(i-1 >= 0){
                     transformMatrix.setEntry(i, j, matrix.getEntry(i, j) +
                             transformMatrix.getEntry(i-1, j));
-                }else {
+                }else if(j-1 >= 0){
                     transformMatrix.setEntry(i, j, matrix.getEntry(i, j) +
                             transformMatrix.getEntry(i, j-1));
                 }

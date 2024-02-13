@@ -6,7 +6,7 @@ import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import com.slamperboom.backend.mathematics.errors.MathError;
 import com.slamperboom.backend.mathematics.results.MathErrorDTO;
-import com.slamperboom.backend.mathematics.results.ResultDTO;
+import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class MathService {
     private final IMathDataService dataService;
     private final ImplementedEntitiesService implementedEntitiesService;
 
-    public List<ResultDTO> makePrediction(String taxName, String methodName, List<String> params){
+    public List<PredictionResultDTO> makePrediction(String taxName, String methodName, List<String> params){
         //парсим параметры
         PredictionAlgorithm algorithm = implementedEntitiesService.getAlgorithmByName(methodName);
         AlgorithmParameters parameters = algorithm.getParameters();
@@ -51,14 +51,14 @@ public class MathService {
             }
         }
         //собираем ResultDTOs
-        List<ResultDTO> results = new ArrayList<>();
-        results.add(new ResultDTO(taxName,
+        List<PredictionResultDTO> results = new ArrayList<>();
+        results.add(new PredictionResultDTO(taxName,
                 methodName, values.getDates(), values.getReference(),
                 prediction, predictionErrors, algorithm.getPredictionParameters()));
-        List<ResultDTO> otherResults = dataService.fetchResultsForTax(values, taxName);
-        for(ResultDTO resultDTO: otherResults){
-            resultDTO.setMathErrors(errorOfOtherAlgorithms.stream()
-                    .filter(l -> !l.isEmpty() && l.get(0).getAlgorithmName().equals(resultDTO.getMethodName()))
+        List<PredictionResultDTO> otherResults = dataService.fetchResultsForTax(values, taxName);
+        for(PredictionResultDTO predictionResultDTO : otherResults){
+            predictionResultDTO.setMathErrors(errorOfOtherAlgorithms.stream()
+                    .filter(l -> !l.isEmpty() && l.get(0).getMethodName().equals(predictionResultDTO.getMethodName()))
                     .findFirst().orElse(new LinkedList<>())
             );
         }

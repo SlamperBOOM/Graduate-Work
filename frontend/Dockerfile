@@ -1,7 +1,9 @@
 FROM node:17-alpine as builder
-WORKDIR /usr/src/dd-frontend
+WORKDIR /src/frontend
 
-COPY package*.json ./
+COPY public/ /src/frontend/public/
+COPY src/ /src/frontend/src/
+COPY package.json /src/frontend/
 
 RUN npm install
 
@@ -9,4 +11,4 @@ COPY . .
 RUN npm run build
 
 EXPOSE 3000
-CMD ["npm", "start"]
+ENTRYPOINT ["npm", "start"]

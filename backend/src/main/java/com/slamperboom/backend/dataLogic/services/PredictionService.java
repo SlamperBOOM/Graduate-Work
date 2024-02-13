@@ -63,7 +63,7 @@ public class PredictionService {
         for(MathErrorDTO errorDTO: errors){
             predictionErrors.add(predictionMapper.fromDTOToPredictionError(taxName, errorDTO));
         }
-        predictionErrorRepository.deleteAll(predictionErrorRepository.findByTaxAndMethod(taxName, errors.get(0).getAlgorithmName()));
+        predictionErrorRepository.deleteAll(predictionErrorRepository.findByTaxAndMethod(taxName, errors.get(0).getMethodName()));
         predictionErrorRepository.flush();
         predictionErrorRepository.saveAll(predictionErrors);
     }

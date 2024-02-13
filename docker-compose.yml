@@ -32,6 +32,13 @@ services:
                 condition: service_healthy
         volumes:
             - backend:/var/usr/
+    frontend:
+        image: frontend
+        build: 
+            context: ./frontend/
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
 
 volumes:
     postgres:

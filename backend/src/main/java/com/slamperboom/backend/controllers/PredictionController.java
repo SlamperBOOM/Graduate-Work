@@ -5,7 +5,7 @@ import com.slamperboom.backend.frontendDTO.AlgorithmDTO;
 import com.slamperboom.backend.frontendDTO.PredictionRequestDTO;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.MathService;
-import com.slamperboom.backend.mathematics.results.ResultDTO;
+import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +19,13 @@ public class PredictionController {
     private final IControllerDataService dataService;
     private final ImplementedEntitiesService implementedEntitiesService;
 
-    @GetMapping("predict")
-    public List<ResultDTO> makePrecision(@RequestBody PredictionRequestDTO requestDTO){
+    @PostMapping("predict")
+    public List<PredictionResultDTO> makePrecision(@RequestBody PredictionRequestDTO requestDTO){
         return mathService.makePrediction(requestDTO.taxName(), requestDTO.methodName(), requestDTO.params());
     }
 
     @GetMapping("predicts/get")
-    public List<ResultDTO> getPredictionsForTax(@RequestParam(name = "taxname") String taxName){
+    public List<PredictionResultDTO> getPredictionsForTax(@RequestParam(name = "taxname") String taxName){
         return dataService.getResultsForTax(taxName);
     }
 

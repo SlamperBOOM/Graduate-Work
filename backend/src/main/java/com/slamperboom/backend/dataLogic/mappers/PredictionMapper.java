@@ -46,7 +46,7 @@ public class PredictionMapper {
     public PredictionError fromDTOToPredictionError(String taxName, MathErrorDTO errorDTO){
         PredictionError error = new PredictionError();
         error.setTaxName(taxName);
-        error.setMethodName(errorDTO.getAlgorithmName());
+        error.setMethodName(errorDTO.getMethodName());
         error.setErrorName(errorDTO.getErrorName());
         error.setValue(errorDTO.getValue());
         return error;
