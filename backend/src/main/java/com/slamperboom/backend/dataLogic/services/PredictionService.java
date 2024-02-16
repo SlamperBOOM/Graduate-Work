@@ -8,6 +8,7 @@ import com.slamperboom.backend.dataLogic.repositories.PredictionsRepository;
 import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
 import com.slamperboom.backend.mathematics.results.MathErrorDTO;
 import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.results.SeriesValueDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,10 +49,10 @@ public class PredictionService {
 
     //TODO проверить надобность выполнения flush
 
-    public void savePredictionResult(String taxName, String methodName, List<Date> dates, List<Double> prediction){
+    public void savePredictionResult(String taxName, String methodName, List<SeriesValueDTO> predictions){
         List<PredictionView> values = new LinkedList<>();
-        for(int i=0; i<dates.size(); ++i){
-            values.add(new PredictionView(taxName, methodName, dates.get(i), prediction.get(i)));
+        for (SeriesValueDTO prediction : predictions) {
+            values.add(new PredictionView(taxName, methodName, prediction.date(), prediction.value()));
         }
         predictionsRepository.deleteAll(predictionsRepository.findByTaxAndMethod(taxName, methodName));
         predictionsRepository.flush();
@@ -68,7 +69,7 @@ public class PredictionService {
         predictionErrorRepository.saveAll(predictionErrors);
     }
 
-    public void saveParametersForPrediction(String taxName, String methodName, List<ResultParameterDTO> parameters){
+    public void saveParametersForPrediction(String taxName, String methodName, List<ResultParameterDTO> parameters) {
         predictionParametersRepository.findByTaxAndMethod(taxName, methodName)
                 .ifPresent(predictionParametersRepository::delete);
         predictionParametersRepository.flush();

@@ -94,17 +94,6 @@ public class DataService implements IMathDataService, IControllerDataService {
         return predictionResultDTOlist;
     }
 
-    public void savePredictionResult(String taxName,
-                                     String methodName,
-                                     List<Date> dates,
-                                     List<Double> prediction,
-                                     List<MathErrorDTO> predictionErrors,
-                                     List<ResultParameterDTO> parameters){
-        predictionService.savePredictionResult(taxName, methodName, dates, prediction);
-        predictionService.saveErrorsForPrediction(taxName, predictionErrors);
-        predictionService.saveParametersForPrediction(taxName, methodName, parameters);
-    }
-
     @Override
     public List<PredictionResultDTO> getResultsForTax(String taxName){
         List<List<MathErrorDTO>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
@@ -116,6 +105,13 @@ public class DataService implements IMathDataService, IControllerDataService {
             );
         }
         return results;
+    }
+
+    @Override
+    public void savePredictionResult(PredictionResultDTO resultDTO) {
+        predictionService.savePredictionResult(resultDTO.getTaxName(), resultDTO.getMethodName(), resultDTO.getPredictionValues());
+        predictionService.saveErrorsForPrediction(resultDTO.getTaxName(), resultDTO.getMathErrors());
+        predictionService.saveParametersForPrediction(resultDTO.getTaxName(), resultDTO.getMethodName(), resultDTO.getParameters());
     }
 
     @Override

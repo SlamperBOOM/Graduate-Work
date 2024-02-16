@@ -63,8 +63,6 @@ public class MathService {
             );
         }
         results.addAll(otherResults);
-        //сохраняем результаты прогноза в бд: прогноз, ошибки, параметры
-        dataService.savePredictionResult(taxName, methodName, dates, prediction, predictionErrors, algorithm.getPredictionParameters());
         return results;
     }
 }

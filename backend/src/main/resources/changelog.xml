@@ -72,6 +72,9 @@
             <column name="params" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="date_of_prediction" type="date">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="tax_factor">
@@ -85,12 +88,271 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="test data" author="slamperboom">
+        <!--    тестовые данные    -->
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2008.01.01"/>
+            <column name="value" value="1708"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2009.01.01"/>
+            <column name="value" value="1053.75"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2010.01.01"/>
+            <column name="value" value="1074.1"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2011.01.01"/>
+            <column name="value" value="1107.3"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2012.01.01"/>
+            <column name="value" value="1450"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2013.01.01"/>
+            <column name="value" value="2514.5"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2014.01.01"/>
+            <column name="value" value="2917.1"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2015.01.01"/>
+            <column name="value" value="3052.4"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2016.01.01"/>
+            <column name="value" value="3209.6"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2017.01.01"/>
+            <column name="value" value="4100"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2018.01.01"/>
+            <column name="value" value="6100"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2019.01.01"/>
+            <column name="value" value="6000"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2020.01.01"/>
+            <column name="value" value="3900"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="type" value="TAX"/>
+            <column name="date" value="2021.01.01"/>
+            <column name="value" value="7200"/>
+        </insert>
 
         <insert tableName="taxes">
-            <column name="tax_name" value="Test"/>
-            <column name="type" value="TAX"/>
-            <column name="date" value="2024.01.15"/>
-            <column name="value" value="24.5461"/>
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2008.01.01"/>
+            <column name="value" value="45.59"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2009.01.01"/>
+            <column name="value" value="77.93"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2010.01.01"/>
+            <column name="value" value="94.29"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2011.01.01"/>
+            <column name="value" value="107.06"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2012.01.01"/>
+            <column name="value" value="111.25"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2013.01.01"/>
+            <column name="value" value="110.59"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2014.01.01"/>
+            <column name="value" value="57.54"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2015.01.01"/>
+            <column name="value" value="37.57"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2016.01.01"/>
+            <column name="value" value="56.73"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2017.01.01"/>
+            <column name="value" value="66.60"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2018.01.01"/>
+            <column name="value" value="54.14"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2019.01.01"/>
+            <column name="value" value="66.00"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2020.01.01"/>
+            <column name="value" value="47.64"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Цена нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2021.01.01"/>
+            <column name="value" value="77.89"/>
+        </insert>
+
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2008.01.01"/>
+            <column name="value" value="488.1"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2009.01.01"/>
+            <column name="value" value="494.2"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2010.01.01"/>
+            <column name="value" value="505.2"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2011.01.01"/>
+            <column name="value" value="511.4"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2012.01.01"/>
+            <column name="value" value="518"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2013.01.01"/>
+            <column name="value" value="523.3"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2014.01.01"/>
+            <column name="value" value="526.8"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2015.01.01"/>
+            <column name="value" value="534.1"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2016.01.01"/>
+            <column name="value" value="547.5"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2017.01.01"/>
+            <column name="value" value="546.8"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2018.01.01"/>
+            <column name="value" value="555.8"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2019.01.01"/>
+            <column name="value" value="560.2"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2020.01.01"/>
+            <column name="value" value="512.7"/>
+        </insert>
+        <insert tableName="taxes">
+            <column name="tax_name" value="Добыча нефти"/>
+            <column name="type" value="FACTOR"/>
+            <column name="date" value="2021.01.01"/>
+            <column name="value" value="524.3"/>
+        </insert>
+
+        <insert tableName="tax_factor">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="factor_name" value="Цена нефти"/>
+        </insert>
+        <insert tableName="tax_factor">
+            <column name="tax_name" value="НДПИ"/>
+            <column name="factor_name" value="Добыча нефти"/>
         </insert>
     </changeSet>
 

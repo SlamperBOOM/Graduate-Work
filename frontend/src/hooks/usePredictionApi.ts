@@ -16,10 +16,15 @@ export function usePredictionApi(){
         return (await api.performPostRequest(baseAddress + "predict", body)) as PredictionResultDTO[];
     }, [api]);
 
+    const saveResult = useCallback(async (resultCode: string, body?: PredictionResultDTO) => {
+        await api.performPostRequest(baseAddress + "confirm", {resultCode, results: body ? [body] : []});
+    }, [api]);
+
     return useMemo(() => {
         return{
             getMethods,
-            makePrediction
+            makePrediction,
+            saveResult
         }
-    },[getMethods, makePrediction]);
+    },[getMethods, makePrediction, saveResult]);
 }

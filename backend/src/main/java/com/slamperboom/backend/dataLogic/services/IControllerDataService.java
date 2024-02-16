@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface IControllerDataService {
     List<PredictionResultDTO> getResultsForTax(String taxName);
+    void savePredictionResult(PredictionResultDTO resultDTO);
     void parseFileAndAddTaxValues(MultipartFile file, String taxName);
     void parseFileAndAddFactorValues(MultipartFile file, String taxName);
 }

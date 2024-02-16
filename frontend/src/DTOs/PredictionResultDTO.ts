@@ -1,22 +1,25 @@
 export type PredictionResultDTO = {
     taxName: string,
     methodName: string,
-    referenceValues: {
-        date: number,
-        value: number
-    }[],
-    predictionValues: {
-        date: number,
-        value: number
-    }[],
-    mathErrors: {
-        methodName: string,
-        errorName: string,
-        value: number,
-        isBetter?: boolean
-    },
-    parameters: {
-        paramName: string,
-        value: number
-    }
+    referenceValues: ValueDTO[],
+    predictionValues: ValueDTO[],
+    mathErrors: MathErrorDTO[],
+    parameters: ParameterDTO[]
+}
+
+export type ValueDTO = {
+    date: number,
+    value: number
+}
+
+export type MathErrorDTO = {
+    methodName: string,
+    errorName: string,
+    value: number,
+    isBetter?: boolean
+}
+
+export type ParameterDTO = {
+    paramName: string,
+    value: number
 }

@@ -63,6 +63,6 @@ public class TaxController {
 
     @PostMapping("add/factor/file")
     public void addFactorValuesViaFile(@RequestParam("file") MultipartFile file, @RequestParam("taxname") String taxName){
-        dataService.parseFileAndAddTaxValues(file, taxName);
+        dataService.parseFileAndAddFactorValues(file, taxName);
     }
 }

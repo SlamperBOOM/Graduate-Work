@@ -18,9 +18,13 @@ export function ErrorPage() {
                 align="center">
                 По указанному адресу ничего нет
             </Typography>
+            <Box
+            display="flex"
+            justifyContent="center">
             <Button
                 onClick={route.routeToMainPage}
                 sx={{
+                width: "20%",
                 justifyContent: "center",
                 borderRadius: 15,
                 backgroundColor: "white",
@@ -42,6 +46,7 @@ export function ErrorPage() {
                     Вернуться на главную
                 </Typography>
             </Button>
+            </Box>
         </Box>
     );
 };
