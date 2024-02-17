@@ -48,8 +48,17 @@ export function SideMenuWrapper(props : SideMenuWrapperProps) {
             <Grid
                 item
                 md={10}
+                sx={{
+                    display:"flex",
+                    height:"100vh",
+                    overflow:"auto"
+                }}
             >
-                {props.children}
+                <Box
+                width="100%"
+                >
+                    {props.children}
+                </Box>
             </Grid>
         </Grid>
         }

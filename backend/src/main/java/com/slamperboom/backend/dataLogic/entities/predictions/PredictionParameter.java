@@ -7,8 +7,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "parameters")
 @Getter
@@ -22,7 +20,4 @@ public class PredictionParameter extends IdEntity {
 
     @Column(name = "params")
     private String parameters;
-
-    @Column(name = "dateOfPrediction")
-    private Date dateOfPrediction;
 }

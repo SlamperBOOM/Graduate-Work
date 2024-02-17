@@ -5,7 +5,7 @@ import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import com.slamperboom.backend.mathematics.errors.MRSEError;
 import com.slamperboom.backend.mathematics.errors.MathError;
-import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;

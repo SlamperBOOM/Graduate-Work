@@ -4,8 +4,8 @@ import com.slamperboom.backend.dataLogic.entities.predictions.Prediction;
 import com.slamperboom.backend.dataLogic.entities.predictions.PredictionError;
 import com.slamperboom.backend.dataLogic.entities.predictions.PredictionParameter;
 import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
-import com.slamperboom.backend.mathematics.results.MathErrorDTO;
-import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.slamperboom.backend.mathematics.results;
+package com.slamperboom.backend.mathematics.resultsDTO;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

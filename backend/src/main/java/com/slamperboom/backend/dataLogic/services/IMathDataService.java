@@ -1,11 +1,9 @@
 package com.slamperboom.backend.dataLogic.services;
 
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
-import com.slamperboom.backend.mathematics.results.MathErrorDTO;
-import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
-import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.PredictionResultDTO;
 
-import java.util.Date;
 import java.util.List;
 
 public interface IMathDataService {

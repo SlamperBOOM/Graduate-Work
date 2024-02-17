@@ -5,8 +5,8 @@ import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import com.slamperboom.backend.mathematics.errors.MathError;
-import com.slamperboom.backend.mathematics.results.MathErrorDTO;
-import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.PredictionResultDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +52,7 @@ public class MathService {
         }
         //собираем ResultDTOs
         List<PredictionResultDTO> results = new ArrayList<>();
-        results.add(new PredictionResultDTO(taxName,
+        results.add(PredictionResultDTO.createInstanceFromRawWithErrors(taxName,
                 methodName, values.getDates(), values.getReference(),
                 prediction, predictionErrors, algorithm.getPredictionParameters()));
         List<PredictionResultDTO> otherResults = dataService.fetchResultsForTax(values, taxName);

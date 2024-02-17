@@ -4,7 +4,7 @@ import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
 import com.slamperboom.backend.mathematics.errors.MRSEError;
-import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
 import org.apache.commons.math3.linear.*;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.springframework.stereotype.Component;

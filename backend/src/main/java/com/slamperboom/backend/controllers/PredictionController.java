@@ -7,7 +7,7 @@ import com.slamperboom.backend.frontendDTO.PredictionRequestDTO;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.MathService;
 import com.slamperboom.backend.mathematics.ResultCodeManager;
-import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.PredictionResultDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +25,8 @@ public class PredictionController {
     @PostMapping("predict")
     public PredictionForFrontendDTO makePrecision(@RequestBody PredictionRequestDTO requestDTO){
         return new PredictionForFrontendDTO(resultCodeManager.getNextUid(),
-                mathService.makePrediction(requestDTO.taxName(), requestDTO.methodName(), requestDTO.params()));
+                mathService.makePrediction(requestDTO.taxName(), requestDTO.methodName(), requestDTO.params())
+                        .stream().map(PredictionResultDTO::mapToResultDTO).toList());
     }
 
     @GetMapping("predicts/get")
@@ -40,10 +41,10 @@ public class PredictionController {
 
     @PostMapping("confirm")
     public void uploadDecision(@RequestBody PredictionForFrontendDTO predictionForFrontendDTO){
-        if(resultCodeManager.checkUid(predictionForFrontendDTO.getResultCode()) &&
-            predictionForFrontendDTO.getResults() != null &&
-            !predictionForFrontendDTO.getResults().isEmpty()) {
-            dataService.savePredictionResult(predictionForFrontendDTO.getResults().get(0));
+        if(resultCodeManager.checkUid(predictionForFrontendDTO.resultCode()) &&
+            predictionForFrontendDTO.results() != null &&
+            !predictionForFrontendDTO.results().isEmpty()) {
+            dataService.savePredictionResult(PredictionResultDTO.mapToPredictionResult(predictionForFrontendDTO.results().get(0)));
         }
     }
 }

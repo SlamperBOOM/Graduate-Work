@@ -1,6 +1,6 @@
 package com.slamperboom.backend.mathematics.algorithms;
 
-import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
 
 import java.util.Collections;
 import java.util.List;

@@ -6,9 +6,8 @@ import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
-import com.slamperboom.backend.mathematics.results.MathErrorDTO;
-import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
-import com.slamperboom.backend.mathematics.results.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.PredictionResultDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,7 +86,7 @@ public class DataService implements IMathDataService, IControllerDataService {
             String methodName = prediction.get(0).methodName();
             List<Date> dates = prediction.stream().map(PredictionView::date).toList();
             List<Double> predictionValues = prediction.stream().map(PredictionView::value).toList();
-            predictionResultDTOlist.add(new PredictionResultDTO(taxName,
+            predictionResultDTOlist.add(PredictionResultDTO.createInstanceFromRawWithoutErrors(taxName,
                     methodName, dates, values.getReference(),
                     predictionValues, predictionService.getParametersForPrediction(taxName, methodName)));
         }

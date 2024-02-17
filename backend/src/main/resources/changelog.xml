@@ -72,9 +72,6 @@
             <column name="params" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="date_of_prediction" type="date">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
 
         <createTable tableName="tax_factor">

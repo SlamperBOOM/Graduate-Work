@@ -16,7 +16,7 @@ export type MathErrorDTO = {
     methodName: string,
     errorName: string,
     value: number,
-    isBetter?: boolean
+    isBetter: boolean | null
 }
 
 export type ParameterDTO = {

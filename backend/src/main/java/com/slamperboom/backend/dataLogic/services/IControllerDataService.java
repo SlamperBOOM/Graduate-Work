@@ -1,6 +1,6 @@
 package com.slamperboom.backend.dataLogic.services;
 
-import com.slamperboom.backend.mathematics.results.PredictionResultDTO;
+import com.slamperboom.backend.mathematics.resultsDTO.PredictionResultDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
