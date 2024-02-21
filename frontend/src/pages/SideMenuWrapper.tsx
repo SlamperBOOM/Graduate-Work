@@ -55,7 +55,9 @@ export function SideMenuWrapper(props : SideMenuWrapperProps) {
                 }}
             >
                 <Box
-                width="100%"
+                width="95%"
+                mx={2}
+                my={2}
                 >
                     {props.children}
                 </Box>

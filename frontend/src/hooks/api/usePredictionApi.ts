@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { useApi } from "./useApi";
-import { AlgorithmDTO } from "../DTOs/AlgorithmDTO";
-import { PredictionRequestDTO } from "../DTOs/PredictionRequestDTO";
-import { PredictionResultDTO } from "../DTOs/PredictionResultDTO";
-import { PredictionForFrontend } from "../DTOs/PredictionForFrontend";
+import { AlgorithmDTO } from "../../DTOs/AlgorithmDTO";
+import { PredictionRequestDTO } from "../../DTOs/PredictionRequestDTO";
+import { PredictionResultDTO } from "../../DTOs/PredictionResultDTO";
+import { PredictionForFrontend } from "../../DTOs/PredictionForFrontend";
 
 export function usePredictionApi(){
     const baseAddress = "prediction/";
@@ -21,11 +21,16 @@ export function usePredictionApi(){
         await api.performPostRequest(baseAddress + "confirm", {resultCode: resultCode, results: body ? [body] : []});
     }, [api]);
 
+    const getResultsForTax = useCallback(async(taxName: string) => {
+        return (await api.performGetRequest(baseAddress + "predicts/get?taxname=" + taxName)) as PredictionResultDTO[];
+    }, [api]);
+
     return useMemo(() => {
         return{
             getMethods,
             makePrediction,
-            saveResult
+            saveResult,
+            getResultsForTax
         }
-    },[getMethods, makePrediction, saveResult]);
+    },[getMethods, makePrediction, saveResult, getResultsForTax]);
 }

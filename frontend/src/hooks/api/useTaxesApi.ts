@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useApi } from "./useApi";
-import { TaxDTO } from "../DTOs/TaxDTO";
+import { TaxDTO } from "../../DTOs/TaxDTO";
+import { TaxFactorDTO } from "../../DTOs/TaxFactorDTO";
 
 export function useTaxesApi(){
     const baseAddress = "taxes/";
@@ -14,10 +15,19 @@ export function useTaxesApi(){
         return (await api.performGetRequest(baseAddress + "names")) as string[];
     }, [api]);
 
+    const getFactorsNames = useCallback(async() => {
+        return (await api.performGetRequest(baseAddress + "names")) as string[];
+    }, [api]);
+
+    const getFactorsForTax = useCallback(async(taxname: string) => {
+        return (await api.performGetRequest(baseAddress + "tax/factors?taxname" + taxname)) as TaxFactorDTO[];
+    }, [api]);
+
     return useMemo(() => {
         return{
             fetchValuesForTax,
-            getTaxesNames
+            getTaxesNames,
+            getFactorsForTax
         }
-    },[fetchValuesForTax, getTaxesNames]);
+    },[fetchValuesForTax, getTaxesNames, getFactorsForTax]);
 }

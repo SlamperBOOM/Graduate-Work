@@ -1,23 +1,20 @@
-import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
-import { MathErrorDTO, ParameterDTO, PredictionResultDTO, ValueDTO } from '../../DTOs/PredictionResultDTO';
-import Scrollbars from 'react-custom-scrollbars-2';
+import { Box, Divider, Typography } from '@mui/material';
+import { PredictionResultDTO } from '../../DTOs/PredictionResultDTO';
+import { LineChart } from '@mui/x-charts';
+import { DataGrid } from "@mui/x-data-grid";
 
-export function PredictionResultView(props: PredictionResultViewProps) {
+export function PredictionResultView(props : PredictionResultViewProps) {
     const result = props.result;
-    
+
     return (
         <Box
         sx={{
-            minWidth:"25vw",
-            mx: 2,
-            height: "60vh",
-            border: "solid",
-            borderRadius: 3,
-            borderWidth: 1,
-            paddingTop: 2,
-            backgroundColor: "#99ccff",
+            minWidth: "60vw",
+            my: 2,
+            padding: 2,
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            height: "170vh"
         }}>
             <Typography
                 variant='h4'
@@ -25,187 +22,248 @@ export function PredictionResultView(props: PredictionResultViewProps) {
             >
                 {result.methodName}
             </Typography>
-            <Scrollbars
-            autoHide
-            autoHideTimeout={2000}
-            autoHideDuration={500}>
-            <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                padding: 3
-            }}>
-                <Box
-                display="flex"
-                flexDirection="column"
-                maxHeight="60%"
-                sx={{
-                    marginBottom: 2
-                }}>
-                    <Grid container sx={{
-                        fontWeight: "bold"
-                    }}>
-                        <Grid item md={6}>
-                            Дата
-                        </Grid>
-                        <Grid item md={6}>
-                            Значение
-                        </Grid>
-                    </Grid>
-                    <Scrollbars
-                        autoHeight>
-                    <Box
-                    display="flex"
-                    flexDirection="column"
-                    sx={{
-                        padding: 1,
-                        backgroundColor: "white"
-                    }}>
-                    {Object.entries(result.predictionValues).map(([key, item]) => 
-                        <ValueView value={item}/>
-                    )}
-                    </Box>
-                    </Scrollbars>
-                </Box>
-                <Divider/>
-                <Typography
-                    variant='body1'
-                    align='center'
-                    fontWeight="bold">
-                    Математические ошибки
-                </Typography>
-                <Box
-                display="flex"
-                flexDirection="column"
-                height="50%"
-                sx={{
-                    marginBottom: 2
-                }}>
-                    <Grid container sx={{
-                        fontWeight: "bold"
-                    }}>
-                        <Grid item md={4}>
-                            Название
-                        </Grid>
-                        <Grid item md={5}>
-                            Значение
-                        </Grid>
-                        <Grid item md={3}>
-                            В сравнении
-                        </Grid>
-                    </Grid>
-                    <Scrollbars
-                        autoHeight>
-                    <Box
-                    display="flex"
-                    flexDirection="column"
-                    sx={{
-                        padding: 1,
-                        backgroundColor: "white"
-                    }}>
-                    {Object.entries(result.mathErrors).map(([key, item]) => 
-                        <MathErrorView error={item}/>
-                    )}
-                    </Box>
-                    </Scrollbars>
-                </Box>
-                <Divider/>
-                <Typography
-                variant='body1'
+            <Typography
+                variant='h5'
                 align='center'
-                fontWeight="bold">
-                    Параметры прогноза
-                </Typography>
+                sx={{my: 2}}
+            >
+                Значения
+            </Typography>
+            <LineChart
+                xAxis={[{
+                    data: result.predictionValues.map((v) => new Date(v.date)),
+                    scaleType: "time"
+                }]}
+                series={[{
+                    data: result.predictionValues.map((v) => v.value),
+                    label: "Прогнозные значения",
+                    color: "blue"
+                },{
+                    data: result.referenceValues.map((v) => v.value),
+                    label: "Оригинальные значения",
+                    color: "red"
+                }]}
+                sx={{
+                    alignSelf: "center",
+                    backgroundColor: 'white',
+                    borderRadius: 2
+                }}
+            />
+            <Box
+            display="flex"
+            flexDirection="row"
+            height="50vh"
+            width="100%"
+            alignSelf="center"
+            justifyContent="center"
+            my={2}>
                 <Box
                 display="flex"
                 flexDirection="column"
-                height="50%">
-                    <Grid container sx={{
-                        fontWeight: "bold"
-                    }}>
-                        <Grid item md={5}>
-                            Параметр
-                        </Grid>
-                        <Grid item md={7}>
-                            Значение
-                        </Grid>
-                    </Grid>
-                    <Scrollbars
-                        autoHeight>
-                    <Box
-                    display="flex"
-                    flexDirection="column"
+                width="75%"
+                mx={2}>
+                    <Typography
+                    variant='h5'
+                    align='center'>
+                        Прогнозные значения
+                    </Typography>
+                    <DataGrid columns={[
+                        {
+                            field: "date",
+                            headerName: "Дата",
+                            type: "date",
+                            flex: 0.4,
+                            editable: false,
+                            valueGetter: ({value}) => value && new Date(value),
+                            width: 200,
+                            headerAlign: "center",
+                            align: "center",
+                        },
+                        {
+                            field: "value",
+                            headerName: "Значение",
+                            flex: 0.6,
+                            type: "number",
+                            editable: false,
+                            headerAlign: "center",
+                            align: "center",
+                        }
+                    ]}
+                    rows={result.predictionValues}
+                    getRowId={(val) => val.date}
                     sx={{
-                        padding: 1,
                         backgroundColor: "white"
-                    }}>
-                    {Object.entries(result.parameters).map(([key, item]) => 
-                        <ParameterView param={item}/>
-                    )}
-                    </Box>
-                    </Scrollbars>
+                    }}
+                    disableRowSelectionOnClick
+                    disableColumnMenu
+                    hideFooter
+                    />
+                </Box>
+                <Box
+                display="flex"
+                flexDirection="column"
+                width="75%"
+                mx={2}>
+                    <Typography
+                    variant='h5'
+                    align='center'>
+                        Оригинальные значения
+                    </Typography>
+                    <DataGrid columns={[
+                        {
+                            field: "date",
+                            headerName: "Дата",
+                            type: "date",
+                            flex: 0.4,
+                            editable: false,
+                            valueGetter: ({value}) => value && new Date(value),
+                            width: 200,
+                            headerAlign: "center",
+                            align: "center",
+                        },
+                        {
+                            field: "value",
+                            headerName: "Значение",
+                            flex: 0.6,
+                            type: "number",
+                            editable: false,
+                            headerAlign: "center",
+                            align: "center",
+                        }
+                    ]}
+                    rows={result.referenceValues}
+                    getRowId={(val) => val.date}
+                    sx={{
+                        backgroundColor: "white"
+                    }}
+                    disableRowSelectionOnClick
+                    disableColumnMenu
+                    hideFooter
+                    />
                 </Box>
             </Box>
-            </Scrollbars>
+            <Divider/>
+            <Box
+            display="flex"
+            flexDirection="row"
+            height="40vh"
+            width="100%"
+            justifyContent="center"
+            my={3}>
+                <Box
+                display="flex"
+                flexDirection="column"
+                height="40vh"
+                width="75%"
+                alignSelf="center"
+                justifyContent="center"
+                mx={2}>
+                    <Typography
+                    variant='h5'
+                    align='center'>
+                        Математические ошибки
+                    </Typography>
+                    <DataGrid columns={[
+                        {
+                            field: "errorName",
+                            headerName: "Название",
+                            flex: 0.3,
+                            editable: false,
+                            width: 200,
+                            headerAlign: "center",
+                            align: "center",
+                        },
+                        {
+                            field: "value",
+                            headerName: "Значение",
+                            flex: 0.5,
+                            type: "number",
+                            editable: false,
+                            headerAlign: "center",
+                            align: "center",
+                        },
+                        {
+                            field: "isBetter",
+                            headerName: "Лучше/хуже",
+                            flex: 0.5,
+                            editable: false,
+                            headerAlign: "center",
+                            align: "center",
+                            valueGetter: ({value}) => value && (value === null ? "" : value ? "Лучше" : "Хуже"),
+                        }
+                    ]}
+                    rows={result.mathErrors.map((v, i) => ({
+                        id: i,
+                        errorName: v.errorName,
+                        value: v.value,
+                        isBetter: v.isBetter
+                    }))}
+                    getRowId={(val) => val.id}
+                    sx={{
+                        backgroundColor: "white",
+                        width: "100%",
+                        alignSelf: "center",
+                        minHeight: "100%"
+                    }}
+                    disableRowSelectionOnClick
+                    disableColumnMenu
+                    hideFooter
+                    />
+                </Box>
+                <Box
+                display="flex"
+                flexDirection="column"
+                height="40vh"
+                width="75%"
+                alignSelf="center"
+                justifyContent="center"
+                mx={2}>
+                    <Typography
+                    variant='h5'
+                    align='center'>
+                        Параметры прогноза
+                    </Typography>
+                    <DataGrid columns={[
+                        {
+                            field: "param",
+                            headerName: "Параметр",
+                            flex: 0.5,
+                            editable: false,
+                            width: 200,
+                            headerAlign: "center",
+                            align: "center",
+                        },
+                        {
+                            field: "value",
+                            headerName: "Значение",
+                            flex: 0.5,
+                            type: "number",
+                            editable: false,
+                            headerAlign: "center",
+                            align: "center",
+                        }
+                    ]}
+                    rows={result.parameters.map((v, i) => ({
+                        id: i,
+                        param: v.paramName,
+                        value: v.value
+                    }))}
+                    getRowId={(val) => val.id}
+                    sx={{
+                        backgroundColor: "white",
+                        width: "100%",
+                        alignSelf: "center",
+                        minHeight: "100%"
+                    }}
+                    disableRowSelectionOnClick
+                    disableColumnMenu
+                    hideFooter
+                    />
+                </Box>
+            </Box>
         </Box>
     );
 };
-
-function ValueView(props: ValueViewProps){
-    return(
-        <Grid container>
-            <Grid item md={6}>
-                {new Date(props.value.date).toLocaleDateString()}
-            </Grid>
-            <Grid item md={6}>
-                {Math.round(props.value.value * 10000) / 10000}
-            </Grid>
-        </Grid>
-    )
-}
-
-type ValueViewProps = {
-    value: ValueDTO
-}
-
-function MathErrorView(props: MathErrorViewProps){
-    const isBetter : Boolean|null = props.error.isBetter;
-
-    return(
-        <Grid container>
-            <Grid item md={4}>
-                {props.error.errorName}
-            </Grid>
-            <Grid item md={5}>
-                {Math.round(props.error.value * 10000) / 10000}
-            </Grid>
-            <Grid item md={3}>
-                {isBetter === null ? "" : isBetter ? "Лучше" : "Хуже"}
-            </Grid>
-        </Grid>
-    )
-}
-
-type MathErrorViewProps = {
-    error: MathErrorDTO
-}
-
-function ParameterView(props: ParameterViewProps){
-    return(
-        <Grid container>
-            <Grid item md={5}>
-                {props.param.paramName}
-            </Grid>
-            <Grid item md={7}>
-                {Math.round(props.param.value * 10000) / 10000}
-            </Grid>
-        </Grid>
-    )
-}
-
-type ParameterViewProps = {
-    param: ParameterDTO
-}
 
 export type PredictionResultViewProps = {
     result: PredictionResultDTO

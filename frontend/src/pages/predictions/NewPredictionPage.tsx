@@ -1,15 +1,13 @@
-import { Box, Button, CircularProgress, Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { SideMenuWrapper } from '../SideMenuWrapper';
-import { usePredictionApi } from '../../hooks/usePredictionApi';
-import { useTaxesApi } from '../../hooks/useTaxesApi';
+import { usePredictionApi } from '../../hooks/api/usePredictionApi';
+import { useTaxesApi } from '../../hooks/api/useTaxesApi';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { AlgorithmDTO } from '../../DTOs/AlgorithmDTO';
-import { PredictionForFrontend } from '../../DTOs/PredictionForFrontend';
-import { PredictionResultView } from './PredictionResultView';
-import Scrollbars from 'react-custom-scrollbars-2';
+import { PredictionResultShortView } from './PredictionResultShortView';
 import { PredictionResultDTO } from '../../DTOs/PredictionResultDTO';
 
-export function NewPrediction() {
+export function NewPredictionPage() {
     const predictionApi = usePredictionApi();
     const taxesApi = useTaxesApi();
     const [methods, setMethods] = useState<AlgorithmDTO[]>([]);
@@ -22,16 +20,10 @@ export function NewPrediction() {
     const [resultNode, setResultNode] = useState<ReactNode>();
     const [parametersValues, setParametersValues] = useState<string[]>([]);
     const [requestProcessing, setRequestProcessing] = useState(false);
-    const [resultCode, setResultCode] = useState("");
+    const [buttonActive, setButtonActive] = useState(false);
 
     const makePrediction = useCallback(() => {
-        if(currentMethod === "" || currentTax === "" || 
-        (parametersValues.length > 0 && parametersValues.find((v) => {
-            if(v.length === 0) return v;
-            else return undefined;
-        }))){
-            //показать окно с ошибкой
-            //либо добавить чекеры в сами поля, но это тяжко
+        if(currentMethod === "" || currentTax === ""){
             console.log("error");
         }else{
             setRequestProcessing(true);
@@ -42,9 +34,11 @@ export function NewPrediction() {
                 params: parametersValues
             }).then((result) => {
                 setRequestProcessing(false);
-                setResultNode(<ResultsNode resultCode={result.resultCode} results={result.results}/>);
-                setResultCode(result.resultCode);
-            });
+                setResultNode(<ResultsNode resultCode={result.resultCode} results={result.results} blockSetter={setResultNode}/>);
+            }).catch((error) => {
+                console.log(error);
+                setRequestProcessing(false);
+            });  
         }
     }, [parametersValues, currentMethod, currentTax, predictionApi]);
 
@@ -52,6 +46,14 @@ export function NewPrediction() {
         predictionApi.getMethods().then((data) => setMethods(data)).catch(() => setMethods([]));
         taxesApi.getTaxesNames().then((data) => setTaxes(data)).catch(() => setTaxes([]));
     }, [predictionApi, taxesApi]);
+
+    useEffect(() => {
+        if(currentMethod === "" || currentTax === ""){
+            setButtonActive(false);
+        }else{
+            setButtonActive(true);
+        }
+    }, [currentMethod, currentTax]);
 
     useEffect(() => {
         const descr = methods.find((e) => e.methodName === currentMethod)?.methodDescription;
@@ -66,20 +68,18 @@ export function NewPrediction() {
                 }}/>)}
             </>
         )
-    }, [currentMethod, methods]);
+    }, [currentMethod, methods, parametersValues]);
 
     return (
         <SideMenuWrapper>
             <Box
             display="flex"
             flexDirection="column"
-            justifyContent="center"
-            width="100%">
+            justifyContent="center">
                 <Typography
                 variant='h4'
                 align="center"
                 sx={{
-                    marginTop: 3,
                     marginBottom: 1,
                     width: "100%"
                 }}>
@@ -94,7 +94,10 @@ export function NewPrediction() {
                     padding: 1
                 }}>
                     <Typography>
-                        Придумать описание страницы в целом
+                        На этой странице вы можете выполнить прогноз налога, представленного в базе данных программы, любым из имеющихся алгоритмов.
+                        Для этого необходимо выбрать алгоритм и налог, а также заполнить необходимые для алгоритма параметры.
+                        После выполнения прогноза можно сравнить получившийся прогноз с ранее выполненными прогнозами и принять решение о том, 
+                        сохранять его или нет.
                     </Typography>
                 </Box>
                 <Box
@@ -181,7 +184,8 @@ export function NewPrediction() {
                     variant='contained'
                     sx={{
                         width: "20%"
-                    }}>
+                    }}
+                    disabled={!buttonActive}>
                         Сделать прогноз
                     </Button>
                 </Box>
@@ -233,6 +237,8 @@ function ParameterItem(props: ParameterItemProps){
                         }}
                         variant='outlined'
                         value={val}
+                        error={val.length === 0}
+                        helperText={val.length === 0 ? "Значение параметра не должно быть пустым" : ""}
                     />
             </Grid>
         </Grid>
@@ -248,20 +254,39 @@ function ResultsNode(props: ResultsNodeProps){
     const prediction = props.results[0];
     const otherResults = props.results.slice(1);
     const predictionApi = usePredictionApi();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogText, setDialogText] = useState("");
 
     const saveResult = useCallback((save: boolean) => {
         if(save){
-            predictionApi.saveResult(props.resultCode, prediction);
+            predictionApi.saveResult(props.resultCode, prediction).then(() => {
+                setDialogText("Прогноз успешно сохранен");
+                setOpenDialog(true);
+            });
         }else{
-            predictionApi.saveResult(props.resultCode);
+            predictionApi.saveResult(props.resultCode).then(() => {
+                props.blockSetter(<></>);
+            });
         }
-    }, [predictionApi]);
+    }, [predictionApi, props, prediction]);
 
     return(
         <Box 
             display="flex"
             flexDirection="column"
         >
+            <Dialog
+                open={openDialog}
+                onClose={() => window.location.reload()}>
+                    <DialogContent>
+                        <DialogContentText>
+                            {dialogText}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => window.location.reload()}>Ок</Button>
+                    </DialogActions>
+                </Dialog>
             <Box
             display="flex"
             justifyContent="center"
@@ -289,24 +314,24 @@ function ResultsNode(props: ResultsNodeProps){
             sx={{
                 margin: 2
             }}>
-                <PredictionResultView result={prediction}/>
+                <PredictionResultShortView result={prediction}/>
                 <Divider orientation='vertical' sx={{mx: 2}}/>
                 {otherResults.length > 0 ?
                 <Box
                 display="flex"
                 flexDirection="row"
-                width="40vw"
+                width="50vw"
                 sx={{
                     overflowX: "scroll"
                 }}
                 >
                     {Object.entries(otherResults).map(([key, item]) => 
-                        <PredictionResultView result={item}/>
+                        <PredictionResultShortView result={item}/>
                     )}
                 </Box>
                 :
                 <Box
-                width="40vw"
+                width="50vw"
                 height="100%"
                 display="flex"
                 flexDirection="column"
@@ -327,5 +352,6 @@ function ResultsNode(props: ResultsNodeProps){
 
 type ResultsNodeProps = {
     resultCode: string,
-    results: PredictionResultDTO[]
+    results: PredictionResultDTO[],
+    blockSetter: (node: ReactNode) => void
 }
