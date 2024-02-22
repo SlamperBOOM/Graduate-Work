@@ -1,5 +1,5 @@
 import { Box, Divider, Typography } from '@mui/material';
-import { PredictionResultDTO } from '../../DTOs/PredictionResultDTO';
+import { ResultDTO } from '../../DTOs/ResultDTO';
 import { LineChart } from '@mui/x-charts';
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -75,7 +75,6 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             flex: 0.4,
                             editable: false,
                             valueGetter: ({value}) => value && new Date(value),
-                            width: 200,
                             headerAlign: "center",
                             align: "center",
                         },
@@ -92,7 +91,9 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                     rows={result.predictionValues}
                     getRowId={(val) => val.date}
                     sx={{
-                        backgroundColor: "white"
+                        width: "100%",
+                        alignSelf: "center",
+                        minHeight: "90%"
                     }}
                     disableRowSelectionOnClick
                     disableColumnMenu
@@ -117,7 +118,6 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             flex: 0.4,
                             editable: false,
                             valueGetter: ({value}) => value && new Date(value),
-                            width: 200,
                             headerAlign: "center",
                             align: "center",
                         },
@@ -134,7 +134,9 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                     rows={result.referenceValues}
                     getRowId={(val) => val.date}
                     sx={{
-                        backgroundColor: "white"
+                        width: "100%",
+                        alignSelf: "center",
+                        minHeight: "90%"
                     }}
                     disableRowSelectionOnClick
                     disableColumnMenu
@@ -169,14 +171,13 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             headerName: "Название",
                             flex: 0.3,
                             editable: false,
-                            width: 200,
                             headerAlign: "center",
                             align: "center",
                         },
                         {
                             field: "value",
                             headerName: "Значение",
-                            flex: 0.5,
+                            flex: 0.4,
                             type: "number",
                             editable: false,
                             headerAlign: "center",
@@ -185,7 +186,7 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                         {
                             field: "isBetter",
                             headerName: "Лучше/хуже",
-                            flex: 0.5,
+                            flex: 0.3,
                             editable: false,
                             headerAlign: "center",
                             align: "center",
@@ -200,7 +201,6 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                     }))}
                     getRowId={(val) => val.id}
                     sx={{
-                        backgroundColor: "white",
                         width: "100%",
                         alignSelf: "center",
                         minHeight: "100%"
@@ -229,7 +229,6 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             headerName: "Параметр",
                             flex: 0.5,
                             editable: false,
-                            width: 200,
                             headerAlign: "center",
                             align: "center",
                         },
@@ -250,7 +249,6 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                     }))}
                     getRowId={(val) => val.id}
                     sx={{
-                        backgroundColor: "white",
                         width: "100%",
                         alignSelf: "center",
                         minHeight: "100%"
@@ -266,5 +264,5 @@ export function PredictionResultView(props : PredictionResultViewProps) {
 };
 
 export type PredictionResultViewProps = {
-    result: PredictionResultDTO
+    result: ResultDTO
 }

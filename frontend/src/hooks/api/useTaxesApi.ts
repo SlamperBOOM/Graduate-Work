@@ -12,22 +12,23 @@ export function useTaxesApi(){
     }, [api]);
 
     const getTaxesNames = useCallback(async() => {
-        return (await api.performGetRequest(baseAddress + "names")) as string[];
+        return (await api.performGetRequest(baseAddress + "tax/names")) as string[];
     }, [api]);
 
     const getFactorsNames = useCallback(async() => {
-        return (await api.performGetRequest(baseAddress + "names")) as string[];
+        return (await api.performGetRequest(baseAddress + "factor/names")) as string[];
     }, [api]);
 
     const getFactorsForTax = useCallback(async(taxname: string) => {
-        return (await api.performGetRequest(baseAddress + "tax/factors?taxname" + taxname)) as TaxFactorDTO[];
+        return (await api.performGetRequest(baseAddress + "tax/factors?taxname=" + taxname)) as string[];
     }, [api]);
 
     return useMemo(() => {
         return{
             fetchValuesForTax,
             getTaxesNames,
-            getFactorsForTax
+            getFactorsForTax,
+            getFactorsNames
         }
-    },[fetchValuesForTax, getTaxesNames, getFactorsForTax]);
+    },[fetchValuesForTax, getTaxesNames, getFactorsForTax, getFactorsNames]);
 }

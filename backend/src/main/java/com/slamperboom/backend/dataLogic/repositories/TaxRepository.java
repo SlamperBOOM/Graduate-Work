@@ -13,4 +13,7 @@ public interface TaxRepository extends JpaRepository<Tax, Long> {
 
     @Query("select distinct t.taxName from Tax t where t.type = 'TAX'")
     List<String> findTaxNames();
+
+    @Query("select distinct t.taxName from Tax t where t.type = 'FACTOR'")
+    List<String> findFactorNames();
 }

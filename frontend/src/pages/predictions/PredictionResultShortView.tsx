@@ -1,5 +1,5 @@
 import { Box, Divider, Grid, Typography } from '@mui/material';
-import { MathErrorDTO, ParameterDTO, PredictionResultDTO, ValueDTO } from '../../DTOs/PredictionResultDTO';
+import { MathErrorDTO, ParameterDTO, ResultDTO, ValueDTO } from '../../DTOs/ResultDTO';
 import Scrollbars from 'react-custom-scrollbars-2';
 
 export function PredictionResultShortView(props: PredictionResultShortViewProps) {
@@ -257,5 +257,5 @@ type ParameterViewProps = {
 }
 
 export type PredictionResultShortViewProps = {
-    result: PredictionResultDTO
+    result: ResultDTO
 }

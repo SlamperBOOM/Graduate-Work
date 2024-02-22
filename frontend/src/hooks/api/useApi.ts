@@ -5,13 +5,11 @@ export function useApi(){
     const baseAddress = "http://localhost:8080/";
 
     const performGetRequest = useCallback( async(url: string) => {
-        const response = await axios.get(baseAddress + url);
-        return response.data;
+        return (await axios.get(baseAddress + url).catch(() => {return {data: []}})).data;
     }, []);
 
     const performPostRequest = useCallback( async(url: string, body: unknown) => {
-        const response = await axios.post(baseAddress + url, body);
-        return response.data;
+        return (await axios.post(baseAddress + url, body).catch(() => {return {data: []}})).data;
     }, []);
 
     return useMemo(() => {

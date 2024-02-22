@@ -1,6 +1,6 @@
 import { Box, Button, CssBaseline, Grid, Paper, Typography } from '@mui/material';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
-import { useRoute } from '../hooks/useRoute';
+import { appRoutes, useRoute } from '../hooks/useRoute';
 
 export function SideMenuWrapper(props : SideMenuWrapperProps) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -40,9 +40,9 @@ export function SideMenuWrapper(props : SideMenuWrapperProps) {
                     }}
                 >
                     <MenuItem text='Главная' onClick={route.routeToMainPage}/>
-                    <MenuItem text='Выполнить прогноз' onClick={route.routeToPredictionPage}/>
-                    <MenuItem text='Посмотреть результаты' onClick={route.routeToResultsPage}/>
-                    <MenuItem text='Посмотреть данные' onClick={route.routeToTaxesPage}/>
+                    <MenuItem text='Выполнить прогноз' href={appRoutes.prediction} onClick={route.routeToPredictionPage}/>
+                    <MenuItem text='Посмотреть результаты' href={appRoutes.results} onClick={route.routeToResultsPage}/>
+                    <MenuItem text='Посмотреть данные' href={appRoutes.taxes} onClick={route.routeToTaxesPage}/>
                 </Box>
             </Grid>
             <Grid
@@ -69,6 +69,8 @@ export function SideMenuWrapper(props : SideMenuWrapperProps) {
 };
 
 function MenuItem(props: MenuItemProps){
+    const isCurrentPage = props.href ? window.location.href.includes(props.href) : false;
+
     return(
       <Button
         onClick={props.onClick}
@@ -76,10 +78,10 @@ function MenuItem(props: MenuItemProps){
           my: 1,
           justifyContent: "start",
           borderRadius: 15,
-          backgroundColor: "white",
+          backgroundColor: isCurrentPage ? "#E5F1FF" : "white",
           padding: 2,
           ':hover':{
-              bgcolor: '#E5F1FF'
+              bgcolor: isCurrentPage ? "#b3d6ff" : '#E5F1FF'
           },
           textTransform: "none"
         }}
@@ -100,7 +102,8 @@ function MenuItem(props: MenuItemProps){
 
 type MenuItemProps = {
     text: string, 
-    onClick: () => void
+    onClick: () => void,
+    href?: string
 }  
 
 export type SideMenuWrapperProps = {

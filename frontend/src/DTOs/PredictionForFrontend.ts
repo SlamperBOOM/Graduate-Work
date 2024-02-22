@@ -1,6 +1,6 @@
-import { PredictionResultDTO } from "./PredictionResultDTO"
+import { ResultDTO } from "./ResultDTO"
 
 export type PredictionForFrontend = {
     resultCode: string,
-    results: PredictionResultDTO[];
+    results: ResultDTO[];
 }

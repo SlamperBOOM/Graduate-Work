@@ -38,6 +38,10 @@ public class TaxService {
         return taxRepository.findTaxNames();
     }
 
+    public List<String> getFactorNames(){
+        return taxRepository.findFactorNames();
+    }
+
     @Transactional(readOnly = true)
     public List<List<TaxView>> getFactorsForTax(String taxName){
         List<TaxFactor> factors = taxFactorRepository.findByTaxName(taxName);

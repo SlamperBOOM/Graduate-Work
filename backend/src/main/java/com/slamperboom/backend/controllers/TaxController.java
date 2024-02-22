@@ -26,14 +26,19 @@ public class TaxController {
         return taxService.getValuesForTax(taxName);
     }
 
-    @GetMapping("names")
+    @GetMapping("tax/names")
     public List<String> getTaxNames(){
         return taxService.getTaxNames();
     }
 
+    @GetMapping("factor/names")
+    public List<String> getFactorNames(){
+        return taxService.getFactorNames();
+    }
+
     @GetMapping("tax/factors")
-    public List<TaxFactorView> getFactorsNamesForTax(@RequestParam(name = "taxname") String taxName){
-        return taxService.getFactorsNamesForTax(taxName);
+    public List<String> getFactorsNamesForTax(@RequestParam(name = "taxname") String taxName){
+        return taxService.getFactorsNamesForTax(taxName).stream().map(TaxFactorView::getFactorName).toList();
     }
 
     @PostMapping("add/tax")
@@ -51,7 +56,7 @@ public class TaxController {
         taxService.saveTaxValue(taxView);
     }
 
-    @PostMapping("tax/factors/add")
+    @PostMapping("tax/factor/add")
     public void addTaxFactorLink(@RequestBody TaxFactorCreateView taxFactorLinkDTO){
         taxService.saveTaxFactorLink(taxFactorLinkDTO);
     }
