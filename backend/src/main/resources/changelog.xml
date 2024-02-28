@@ -85,6 +85,8 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addUniqueConstraint tableName="tax_factor" columnNames="tax_name, factor_name"/>
+
     </changeSet>
     <changeSet id="test data" author="slamperboom">
         <!--    тестовые данные    -->

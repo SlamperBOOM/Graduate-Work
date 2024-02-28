@@ -44,7 +44,7 @@ export function NewPredictionPage() {
 
     useEffect(() => {
         predictionApi.getMethods().then((data) => setMethods(data)).catch(() => setMethods([]));
-        taxesApi.getTaxesNames().then((data) => setTaxes(data)).catch(() => setTaxes([]));
+        taxesApi.get.getTaxesNames().then((data) => setTaxes(data)).catch(() => setTaxes([]));
     }, [predictionApi, taxesApi]);
 
     useEffect(() => {

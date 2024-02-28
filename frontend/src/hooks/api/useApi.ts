@@ -12,10 +12,15 @@ export function useApi(){
         return (await axios.post(baseAddress + url, body).catch(() => {return {data: []}})).data;
     }, []);
 
+    const performDeleteRequest = useCallback( async(url: string) => {
+        return await axios.delete(baseAddress + url);
+    }, []);
+
     return useMemo(() => {
         return{
             performGetRequest,
-            performPostRequest
+            performPostRequest,
+            performDeleteRequest
         }
-    },[performGetRequest, performPostRequest]);
+    },[performGetRequest, performPostRequest, performDeleteRequest]);
 };

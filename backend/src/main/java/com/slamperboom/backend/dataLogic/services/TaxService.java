@@ -68,4 +68,12 @@ public class TaxService {
     public void saveTaxFactorLink(TaxFactorCreateView createView){
         taxFactorRepository.save(taxMapper.fromCreateToTaxFactor(createView));
     }
+
+    public void deleteTaxValue(long id){
+        taxRepository.deleteById(id);
+    }
+
+    public void deleteTaxFactorLink(long id){
+        taxFactorRepository.deleteById(id);
+    }
 }

@@ -17,7 +17,7 @@ export function ResultsPage(props: ResultsPageProps) {
     const [currentShowingResult, setCurrentShowingResult] = useState<ReactNode>();
 
     useEffect(() => {
-        taxesApi.getTaxesNames().then((data) => setTaxes(data)).catch(() => setTaxes([]));
+        taxesApi.get.getTaxesNames().then((data) => setTaxes(data)).catch(() => setTaxes([]));
     }, [taxesApi]);
 
     useEffect(() => {

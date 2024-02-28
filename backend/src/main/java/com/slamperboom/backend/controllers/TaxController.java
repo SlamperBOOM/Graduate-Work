@@ -37,18 +37,8 @@ public class TaxController {
     }
 
     @GetMapping("tax/factors")
-    public List<String> getFactorsNamesForTax(@RequestParam(name = "taxname") String taxName){
-        return taxService.getFactorsNamesForTax(taxName).stream().map(TaxFactorView::getFactorName).toList();
-    }
-
-    @PostMapping("add/tax")
-    public void addTaxValues(@RequestBody TaxValueDTO taxValueDTO){
-        taxService.addTaxValue(new TaxCreateView(taxValueDTO.taxName(), TaxType.TAX, taxValueDTO.date(), taxValueDTO.value()));
-    }
-
-    @PostMapping("add/factor")
-    public void addFactorValues(@RequestBody TaxValueDTO taxValueDTO){
-        taxService.addTaxValue(new TaxCreateView(taxValueDTO.taxName(), TaxType.FACTOR, taxValueDTO.date(), taxValueDTO.value()));
+    public List<TaxFactorView> getFactorsNamesForTax(@RequestParam(name = "taxname") String taxName) {
+        return taxService.getFactorsNamesForTax(taxName);
     }
 
     @PostMapping("save")
@@ -61,13 +51,29 @@ public class TaxController {
         taxService.saveTaxFactorLink(taxFactorLinkDTO);
     }
 
-    @PostMapping("add/tax/file")
-    public void addTaxValuesViaFile(@RequestParam("file") MultipartFile file, @RequestParam("taxname") String taxName){
-        dataService.parseFileAndAddTaxValues(file, taxName);
+    @PostMapping("add")
+    public void addTaxValues(@RequestParam("type") String type, @RequestBody TaxValueDTO taxValueDTO){
+        taxService.addTaxValue(new TaxCreateView(taxValueDTO.taxName(), TaxType.valueOf(type), taxValueDTO.date(), taxValueDTO.value()));
     }
 
-    @PostMapping("add/factor/file")
-    public void addFactorValuesViaFile(@RequestParam("file") MultipartFile file, @RequestParam("taxname") String taxName){
-        dataService.parseFileAndAddFactorValues(file, taxName);
+    @PostMapping("add/file")
+    public void addTaxValuesViaFile(@RequestParam("file") MultipartFile file,
+                                    @RequestParam("taxname") String taxName,
+                                    @RequestParam("type") String type){
+        if(type.equals(TaxType.TAX.toString())) {
+            dataService.parseFileAndAddTaxValues(file, taxName);
+        }else{
+            dataService.parseFileAndAddFactorValues(file, taxName);
+        }
+    }
+
+    @DeleteMapping("delete")
+    public void deleteTaxValue(@RequestParam("recordid") String id){
+        taxService.deleteTaxValue(Long.parseLong(id));
+    }
+
+    @DeleteMapping("tax/factor/delete")
+    public void deleteTaxFactorLink(@RequestParam("linkid") String id){
+        taxService.deleteTaxFactorLink(Long.parseLong(id));
     }
 }

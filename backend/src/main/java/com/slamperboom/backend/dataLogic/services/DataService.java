@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -35,26 +38,26 @@ public class DataService implements IMathDataService, IControllerDataService {
         }
         List<Date> minimumDates = new LinkedList<>();
         List<Date> maximumDates = new LinkedList<>();
-        minimumDates.add(taxValues.get(0).getDate());
-        maximumDates.add(taxValues.get(taxValues.size()-1).getDate());
+        minimumDates.add(taxValues.get(0).date());
+        maximumDates.add(taxValues.get(taxValues.size()-1).date());
         if(!factorsValues.isEmpty()){
-            minimumDates.addAll(factorsValues.stream().map(l -> l.get(0).getDate()).toList());
-            maximumDates.addAll(factorsValues.stream().map(l -> l.get(l.size()-1).getDate()).toList());
+            minimumDates.addAll(factorsValues.stream().map(l -> l.get(0).date()).toList());
+            maximumDates.addAll(factorsValues.stream().map(l -> l.get(l.size()-1).date()).toList());
         }
         //в каждом листе будет как минимум один элемент, поэтому минимум/максимум будет всегда
         Date minDate = minimumDates.stream().max(Date::compareTo).orElseThrow();
         Date maxDate = maximumDates.stream().min(Date::compareTo).orElseThrow();
         for (TaxView taxView: taxValues){
-            if(taxView.getDate().compareTo(minDate) >= 0 && taxView.getDate().compareTo(maxDate) <= 0){
-                reference.add(taxView.getValue());
-                dates.add(taxView.getDate());
+            if(taxView.date().compareTo(minDate) >= 0 && taxView.date().compareTo(maxDate) <= 0){
+                reference.add(taxView.value());
+                dates.add(taxView.date());
             }
         }
         for(List<TaxView> factorValues: factorsValues){
             List<Double> values = new LinkedList<>();
             for (TaxView factorView: factorValues){
-                if(factorView.getDate().compareTo(minDate) >= 0 && factorView.getDate().compareTo(maxDate) <= 0){
-                    values.add(factorView.getValue());
+                if(factorView.date().compareTo(minDate) >= 0 && factorView.date().compareTo(maxDate) <= 0){
+                    values.add(factorView.value());
                 }
             }
             factors.add(values);
@@ -134,8 +137,29 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     private Map<Date, Double> parseValuesFromFile(MultipartFile file){
-        //TODO сделать парсинг файлов с данными
-        //Продумать формат файлов
-        return new HashMap<>();
+        Map<Date, Double> values = new HashMap<>();
+        try {
+            if(file.isEmpty()){
+                throw new RuntimeException("empty file");
+            }
+            String data = new String(file.getBytes());
+            Scanner reader = new Scanner(data);
+
+            reader.nextLine(); //assuming that first line contains header
+            while(reader.hasNextLine()){
+                String[] line = reader.nextLine().split(";");
+                if(line.length < 2){
+                    throw new RuntimeException("not enough data");
+                }
+                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                values.put(
+                        format.parse(line[0]), Double.valueOf(line[1].replace(",", "."))
+                );
+            }
+            reader.close();
+        }catch (ParseException | IOException e){
+            throw new RuntimeException("ex");
+        }
+        return values;
     }
 }

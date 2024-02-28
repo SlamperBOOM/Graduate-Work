@@ -7,6 +7,6 @@ export type TaxDTO = {
     id: number,
     taxName: string,
     type: TaxType,
-    date: number,
+    date: string,
     value: number
 }

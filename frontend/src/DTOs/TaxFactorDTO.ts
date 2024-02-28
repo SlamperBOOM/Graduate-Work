@@ -1,4 +1,10 @@
 export type TaxFactorDTO = {
-    taxname: string,
-    factorname: string
+    id: number,
+    taxName: string,
+    factorName: string
+}
+
+export type TaxFactorCreateDTO = {
+    taxName: string,
+    factorName: string
 }
