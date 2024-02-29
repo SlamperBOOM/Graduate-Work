@@ -1,4 +1,4 @@
-package com.slamperboom.backend.mathematics;
+package com.slamperboom.backend.controllers;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

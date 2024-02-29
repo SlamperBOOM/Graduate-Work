@@ -6,9 +6,9 @@ import com.slamperboom.backend.dataLogic.repositories.PredictionErrorRepository;
 import com.slamperboom.backend.dataLogic.repositories.PredictionParametersRepository;
 import com.slamperboom.backend.dataLogic.repositories.PredictionsRepository;
 import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
-import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
-import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
-import com.slamperboom.backend.mathematics.resultsDTO.SeriesValueDTO;
+import com.slamperboom.backend.mathematics.resultData.MathError;
+import com.slamperboom.backend.mathematics.resultData.ResultParameter;
+import com.slamperboom.backend.mathematics.resultData.SeriesValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,7 @@ public class PredictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResultParameterDTO> getParametersForPrediction(String taxName, String methodName){
+    public List<ResultParameter> getParametersForPrediction(String taxName, String methodName){
         Optional<String> result = predictionParametersRepository.findParamByTaxAndMethod(taxName, methodName);
         if(result.isPresent()){
             return predictionMapper.fromParameterToDTO(result.get());
@@ -42,14 +42,14 @@ public class PredictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<MathErrorDTO> getErrorsForPrediction(String taxName, String methodName){
+    public List<MathError> getErrorsForPrediction(String taxName, String methodName){
         List<PredictionError> errors = predictionErrorRepository.findByTaxAndMethod(taxName, methodName);
         return errors.stream().map(predictionMapper::fromPredictionErrorToDTO).toList();
     }
 
-    public void savePredictionResult(String taxName, String methodName, List<SeriesValueDTO> predictions){
+    public void savePredictionResult(String taxName, String methodName, List<SeriesValue> predictions){
         List<PredictionView> values = new LinkedList<>();
-        for (SeriesValueDTO prediction : predictions) {
+        for (SeriesValue prediction : predictions) {
             values.add(new PredictionView(taxName, methodName, prediction.date(), prediction.value()));
         }
         predictionsRepository.deleteAll(predictionsRepository.findByTaxAndMethod(taxName, methodName));
@@ -57,9 +57,9 @@ public class PredictionService {
         predictionsRepository.saveAll(values.stream().map(predictionMapper::fromViewToPrediction).toList());
     }
 
-    public void saveErrorsForPrediction(String taxName, List<MathErrorDTO> errors){
+    public void saveErrorsForPrediction(String taxName, List<MathError> errors){
         List<PredictionError> predictionErrors = new LinkedList<>();
-        for(MathErrorDTO errorDTO: errors){
+        for(MathError errorDTO: errors){
             predictionErrors.add(predictionMapper.fromDTOToPredictionError(taxName, errorDTO));
         }
         predictionErrorRepository.deleteAll(predictionErrorRepository.findByTaxAndMethod(taxName, errors.get(0).getMethodName()));
@@ -67,7 +67,7 @@ public class PredictionService {
         predictionErrorRepository.saveAll(predictionErrors);
     }
 
-    public void saveParametersForPrediction(String taxName, String methodName, List<ResultParameterDTO> parameters) {
+    public void saveParametersForPrediction(String taxName, String methodName, List<ResultParameter> parameters) {
         predictionParametersRepository.findByTaxAndMethod(taxName, methodName)
                 .ifPresent(predictionParametersRepository::delete);
         predictionParametersRepository.flush();

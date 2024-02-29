@@ -1,4 +1,4 @@
-package com.slamperboom.backend.mathematics.errors;
+package com.slamperboom.backend.mathematics.mathErrors;
 
 import java.util.List;
 

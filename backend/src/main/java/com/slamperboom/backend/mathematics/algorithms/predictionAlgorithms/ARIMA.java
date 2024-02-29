@@ -1,10 +1,12 @@
 package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 
+import com.slamperboom.backend.exceptions.errorCodes.PredictionCodes;
+import com.slamperboom.backend.exceptions.exceptions.PredictionException;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.errors.MRSEError;
-import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.mathErrors.MRSEError;
+import com.slamperboom.backend.mathematics.resultData.ResultParameter;
 import org.apache.commons.math3.linear.*;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.springframework.stereotype.Component;
@@ -162,11 +164,11 @@ public class ARIMA implements PredictionAlgorithm {
     }
 
     @Override
-    public List<ResultParameterDTO> getPredictionParameters() {
-        List<ResultParameterDTO> parameters = new LinkedList<>();
-        parameters.add(new ResultParameterDTO("P", (double) bestP));
-        parameters.add(new ResultParameterDTO("D", (double) bestD));
-        parameters.add(new ResultParameterDTO("Q", (double) bestQ));
+    public List<ResultParameter> getPredictionParameters() {
+        List<ResultParameter> parameters = new LinkedList<>();
+        parameters.add(new ResultParameter("P", (double) bestP));
+        parameters.add(new ResultParameter("D", (double) bestD));
+        parameters.add(new ResultParameter("Q", (double) bestQ));
         return parameters;
     }
 
@@ -186,9 +188,13 @@ public class ARIMA implements PredictionAlgorithm {
 
         @Override
         public void parseParameters(List<String> stringParams) {
-            paramP = Arrays.stream(stringParams.get(0).split(";")).map(Double::parseDouble).sorted().toList();
-            paramD = Arrays.stream(stringParams.get(1).split(";")).map(Double::parseDouble).sorted().toList();
-            paramQ = List.of(Double.parseDouble(stringParams.get(2)));
+            try {
+                paramP = Arrays.stream(stringParams.get(0).split(";")).map(Double::parseDouble).sorted().toList();
+                paramD = Arrays.stream(stringParams.get(1).split(";")).map(Double::parseDouble).sorted().toList();
+                paramQ = List.of(Double.parseDouble(stringParams.get(2)));
+            }catch (NumberFormatException e){
+                throw new PredictionException(PredictionCodes.wrongParameterFormat);
+            }
         }
 
         @Override

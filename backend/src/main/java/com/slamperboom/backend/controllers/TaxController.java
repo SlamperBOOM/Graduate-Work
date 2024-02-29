@@ -8,12 +8,14 @@ import com.slamperboom.backend.dataLogic.views.taxes.TaxFactorCreateView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxFactorView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
 import com.slamperboom.backend.frontendDTO.TaxValueDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Tag(name = "Tax data controller", description = "Manage tax values and other related data")
 @RestController
 @RequestMapping("taxes")
 @RequiredArgsConstructor

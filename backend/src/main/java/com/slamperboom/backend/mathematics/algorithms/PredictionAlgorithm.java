@@ -1,6 +1,6 @@
 package com.slamperboom.backend.mathematics.algorithms;
 
-import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultData.ResultParameter;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +22,7 @@ public interface PredictionAlgorithm {
      * Возвращает список параметров, при которых был найден прогноз в последнем вызове makePrediction
      * @return Список параметров
      */
-    default List<ResultParameterDTO> getPredictionParameters(){
+    default List<ResultParameter> getPredictionParameters(){
         return Collections.emptyList();
     }
 }

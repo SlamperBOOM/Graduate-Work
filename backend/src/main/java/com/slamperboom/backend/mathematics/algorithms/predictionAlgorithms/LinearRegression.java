@@ -3,9 +3,9 @@ package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.errors.MRSEError;
-import com.slamperboom.backend.mathematics.errors.MathError;
-import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.mathErrors.MRSEError;
+import com.slamperboom.backend.mathematics.mathErrors.MathError;
+import com.slamperboom.backend.mathematics.resultData.ResultParameter;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -136,12 +136,12 @@ public class LinearRegression implements PredictionAlgorithm {
     }
 
     @Override
-    public List<ResultParameterDTO> getPredictionParameters() {
-        List<ResultParameterDTO> parameters = new LinkedList<>();
-        parameters.add(new ResultParameterDTO("Learning rate", bestLR));
-        parameters.add(new ResultParameterDTO("Epochs", bestEpochs));
+    public List<ResultParameter> getPredictionParameters() {
+        List<ResultParameter> parameters = new LinkedList<>();
+        parameters.add(new ResultParameter("Learning rate", bestLR));
+        parameters.add(new ResultParameter("Epochs", bestEpochs));
         for(int i=0; i<bestWeights.length; ++i){
-            parameters.add(new ResultParameterDTO("weight"+(i+1), bestWeights[i]));
+            parameters.add(new ResultParameter("weight"+(i+1), bestWeights[i]));
         }
         return parameters;
     }

@@ -4,10 +4,14 @@ import com.slamperboom.backend.dataLogic.entities.taxes.TaxType;
 import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
+import com.slamperboom.backend.exceptions.errorCodes.DataCodes;
+import com.slamperboom.backend.exceptions.errorCodes.PredictionCodes;
+import com.slamperboom.backend.exceptions.exceptions.FileParserException;
+import com.slamperboom.backend.exceptions.exceptions.PredictionException;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
-import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
-import com.slamperboom.backend.mathematics.resultsDTO.PredictionResultDTO;
+import com.slamperboom.backend.mathematics.resultData.MathError;
+import com.slamperboom.backend.mathematics.resultData.PredictionResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +38,7 @@ public class DataService implements IMathDataService, IControllerDataService {
         List<List<Double>> factors = new LinkedList<>();
 
         if(taxValues.isEmpty()){
-            throw new NoSuchElementException();
+            throw new PredictionException(PredictionCodes.noValues);
         }
         List<Date> minimumDates = new LinkedList<>();
         List<Date> maximumDates = new LinkedList<>();
@@ -45,8 +49,8 @@ public class DataService implements IMathDataService, IControllerDataService {
             maximumDates.addAll(factorsValues.stream().map(l -> l.get(l.size()-1).date()).toList());
         }
         //в каждом листе будет как минимум один элемент, поэтому минимум/максимум будет всегда
-        Date minDate = minimumDates.stream().max(Date::compareTo).orElseThrow();
-        Date maxDate = maximumDates.stream().min(Date::compareTo).orElseThrow();
+        Date minDate = minimumDates.stream().max(Date::compareTo).orElse(new Date(0));
+        Date maxDate = maximumDates.stream().min(Date::compareTo).orElse(new Date(Long.MAX_VALUE));
         for (TaxView taxView: taxValues){
             if(taxView.date().compareTo(minDate) >= 0 && taxView.date().compareTo(maxDate) <= 0){
                 reference.add(taxView.value());
@@ -66,8 +70,8 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     @Override
-    public List<List<MathErrorDTO>> getErrorsForTaxPredictions(String taxName){
-        List<List<MathErrorDTO>> errors = new LinkedList<>();
+    public List<List<MathError>> getErrorsForTaxPredictions(String taxName){
+        List<List<MathError>> errors = new LinkedList<>();
         for(String methodName: implementedEntitiesService.getImplementedAlgorithmsNames()){
             errors.add(predictionService.getErrorsForPrediction(taxName, methodName));
         }
@@ -75,8 +79,8 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     @Override
-    public List<PredictionResultDTO> fetchResultsForTax(AlgorithmValues values, String taxName){
-        List<PredictionResultDTO> predictionResultDTOlist = new LinkedList<>();
+    public List<PredictionResult> fetchResultsForTax(AlgorithmValues values, String taxName){
+        List<PredictionResult> predictionResultDTOlist = new LinkedList<>();
 
         List<List<PredictionView>> predictions = new LinkedList<>();
         for(String methodName: implementedEntitiesService.getImplementedAlgorithmsNames()) {
@@ -89,7 +93,7 @@ public class DataService implements IMathDataService, IControllerDataService {
             String methodName = prediction.get(0).methodName();
             List<Date> dates = prediction.stream().map(PredictionView::date).toList();
             List<Double> predictionValues = prediction.stream().map(PredictionView::value).toList();
-            predictionResultDTOlist.add(PredictionResultDTO.createInstanceFromRawWithoutErrors(taxName,
+            predictionResultDTOlist.add(PredictionResult.createInstanceFromRawWithoutErrors(taxName,
                     methodName, dates, values.getReference(),
                     predictionValues, predictionService.getParametersForPrediction(taxName, methodName)));
         }
@@ -97,12 +101,12 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     @Override
-    public List<PredictionResultDTO> getResultsForTax(String taxName){
-        List<List<MathErrorDTO>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
-        List<PredictionResultDTO> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
-        for(PredictionResultDTO predictionResultDTO : results){
-            predictionResultDTO.setMathErrors(errorsForAlgorithms.stream()
-                    .filter(l -> !l.isEmpty() && l.get(0).getMethodName().equals(predictionResultDTO.getMethodName()))
+    public List<PredictionResult> getResultsForTax(String taxName){
+        List<List<MathError>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
+        List<PredictionResult> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
+        for(PredictionResult predictionResult : results){
+            predictionResult.setMathErrors(errorsForAlgorithms.stream()
+                    .filter(l -> !l.isEmpty() && l.get(0).getMethodName().equals(predictionResult.getMethodName()))
                     .findFirst().orElse(new LinkedList<>())
             );
         }
@@ -110,7 +114,7 @@ public class DataService implements IMathDataService, IControllerDataService {
     }
 
     @Override
-    public void savePredictionResult(PredictionResultDTO resultDTO) {
+    public void savePredictionResult(PredictionResult resultDTO) {
         predictionService.savePredictionResult(resultDTO.getTaxName(), resultDTO.getMethodName(), resultDTO.getPredictionValues());
         predictionService.saveErrorsForPrediction(resultDTO.getTaxName(), resultDTO.getMathErrors());
         predictionService.saveParametersForPrediction(resultDTO.getTaxName(), resultDTO.getMethodName(), resultDTO.getParameters());
@@ -140,7 +144,7 @@ public class DataService implements IMathDataService, IControllerDataService {
         Map<Date, Double> values = new HashMap<>();
         try {
             if(file.isEmpty()){
-                throw new RuntimeException("empty file");
+                throw new FileParserException(DataCodes.emptyFile);
             }
             String data = new String(file.getBytes());
             Scanner reader = new Scanner(data);
@@ -149,7 +153,7 @@ public class DataService implements IMathDataService, IControllerDataService {
             while(reader.hasNextLine()){
                 String[] line = reader.nextLine().split(";");
                 if(line.length < 2){
-                    throw new RuntimeException("not enough data");
+                    throw new FileParserException(DataCodes.wrongFileFormat);
                 }
                 SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
                 values.put(
@@ -158,7 +162,7 @@ public class DataService implements IMathDataService, IControllerDataService {
             }
             reader.close();
         }catch (ParseException | IOException e){
-            throw new RuntimeException("ex");
+            throw new FileParserException(DataCodes.wrongFileFormat);
         }
         return values;
     }

@@ -2,7 +2,7 @@ package com.slamperboom.backend.mathematics;
 
 import com.slamperboom.backend.frontendDTO.AlgorithmDTO;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.errors.MathError;
+import com.slamperboom.backend.mathematics.mathErrors.MathError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

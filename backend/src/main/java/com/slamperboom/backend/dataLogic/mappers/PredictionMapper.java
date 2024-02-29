@@ -4,8 +4,8 @@ import com.slamperboom.backend.dataLogic.entities.predictions.Prediction;
 import com.slamperboom.backend.dataLogic.entities.predictions.PredictionError;
 import com.slamperboom.backend.dataLogic.entities.predictions.PredictionParameter;
 import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
-import com.slamperboom.backend.mathematics.resultsDTO.MathErrorDTO;
-import com.slamperboom.backend.mathematics.resultsDTO.ResultParameterDTO;
+import com.slamperboom.backend.mathematics.resultData.MathError;
+import com.slamperboom.backend.mathematics.resultData.ResultParameter;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -28,22 +28,22 @@ public class PredictionMapper {
         return prediction;
     }
 
-    public List<ResultParameterDTO> fromParameterToDTO(String parameter){
+    public List<ResultParameter> fromParameterToDTO(String parameter){
         if(parameter.isEmpty()){
             return Collections.emptyList();
         }else {
             return Arrays.stream(parameter.split(";")).map(param -> {
                 String[] split = param.split("=");
-                return new ResultParameterDTO(split[0], Double.parseDouble(split[1]));
+                return new ResultParameter(split[0], Double.parseDouble(split[1]));
             }).toList();
         }
     }
 
-    public MathErrorDTO fromPredictionErrorToDTO(PredictionError error){
-        return new MathErrorDTO(error.getMethodName(), error.getErrorName(), error.getValue());
+    public MathError fromPredictionErrorToDTO(PredictionError error){
+        return new MathError(error.getMethodName(), error.getErrorName(), error.getValue());
     }
 
-    public PredictionError fromDTOToPredictionError(String taxName, MathErrorDTO errorDTO){
+    public PredictionError fromDTOToPredictionError(String taxName, MathError errorDTO){
         PredictionError error = new PredictionError();
         error.setTaxName(taxName);
         error.setMethodName(errorDTO.getMethodName());
@@ -54,13 +54,13 @@ public class PredictionMapper {
 
     public PredictionParameter fromDTOToPredictionParameter(String taxName,
                                                             String methodName,
-                                                            List<ResultParameterDTO> parameters){
+                                                            List<ResultParameter> parameters){
         PredictionParameter predictionParameter = new PredictionParameter();
         predictionParameter.setTaxName(taxName);
         predictionParameter.setMethodName(methodName);
 
         StringBuilder builder = new StringBuilder();
-        for(ResultParameterDTO parameterDTO: parameters){
+        for(ResultParameter parameterDTO: parameters){
             builder.append(parameterDTO.paramName()).append("=").append(parameterDTO.value()).append(";");
         }
         predictionParameter.setParameters(builder.toString());
