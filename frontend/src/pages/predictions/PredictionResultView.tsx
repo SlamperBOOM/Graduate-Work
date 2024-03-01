@@ -1,10 +1,15 @@
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import { ResultDTO } from '../../DTOs/ResultDTO';
 import { LineChart } from '@mui/x-charts';
 import { DataGrid } from "@mui/x-data-grid";
+import { useCallback } from 'react';
 
 export function PredictionResultView(props : PredictionResultViewProps) {
     const result = props.result;
+
+    const exportToXML = useCallback(() => {
+        console.log(JSON.stringify(result));
+    }, []);
 
     return (
         <Box
@@ -22,6 +27,16 @@ export function PredictionResultView(props : PredictionResultViewProps) {
             >
                 {result.methodName}
             </Typography>
+            <Button
+            variant='contained'
+            onClick={exportToXML}
+            sx={{
+                width: "20%",
+                alignSelf: "center",
+                my: 2
+            }}>
+                Экспортировать прогноз в .json
+            </Button>
             <Typography
                 variant='h5'
                 align='center'

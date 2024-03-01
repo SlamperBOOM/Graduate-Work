@@ -10,10 +10,6 @@ import { innerStorageMembers } from "../../hooks/useUtility";
 export function TaxDataPage(props: TaxDataPageProps) {
     const [currentTab, setCurrentTab] = useState(localStorage.getItem(innerStorageMembers.lastTab) ?? "tax");
 
-    useEffect(() => {
-        localStorage.removeItem(innerStorageMembers.lastTab);
-    }, []);
-
     return (
         <SideMenuWrapper>
             <Box

@@ -4,6 +4,7 @@ import { AlgorithmDTO } from "../../DTOs/AlgorithmDTO";
 import { PredictionRequestDTO } from "../../DTOs/PredictionRequestDTO";
 import { ResultDTO } from "../../DTOs/ResultDTO";
 import { PredictionForFrontend } from "../../DTOs/PredictionForFrontend";
+import { PredictionConfirmDTO } from "../../DTOs/PredictionConfirmDTO";
 
 export function usePredictionApi(){
     const baseAddress = "prediction/";
@@ -18,7 +19,7 @@ export function usePredictionApi(){
     }, [api]);
 
     const saveResult = useCallback(async (resultCode: string, body?: ResultDTO) => {
-        await api.performPostRequest(baseAddress + "confirm", {resultCode: resultCode, results: body ? [body] : []});
+        await api.performPostRequest(baseAddress + "confirm", {resultCode: resultCode, resultDTO: body ? body : null} as PredictionConfirmDTO);
     }, [api]);
 
     const getResultsForTax = useCallback(async(taxName: string) => {
