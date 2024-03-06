@@ -8,7 +8,7 @@ export type ResultDTO = {
 }
 
 export type ValueDTO = {
-    date: number,
+    date: string,
     value: number
 }
 

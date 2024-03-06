@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +35,10 @@ public class PredictionController {
                     "You can get available algorithms with its parameters description (if any specified) with /*link to algorithms method*/. " +
                     "You must confirm or regret result got with this method by making request to /*link to confirm method*/"
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "500",
-                    description = "Something happened while calculating prediction. Watch response for more accurate information",
-                    content = @Content(schema = @Schema()))
-    })
+    @ApiResponse(responseCode = "200")
+    @ApiResponse(responseCode = "500",
+            description = "Something happened while calculating prediction. Watch response for more accurate information",
+            content = @Content(schema = @Schema()))
     @PostMapping("predict")
     public PredictionForFrontendDTO makePrecision(@RequestBody PredictionRequestDTO requestDTO){
         return new PredictionForFrontendDTO(resultCodeManager.getNextUid(),
@@ -51,7 +48,7 @@ public class PredictionController {
 
     @Operation(
             summary = "Get already done predictions for tax",
-            description = "Get all done predictions for tax",
+            description = "Gives all done predictions for tax",
             parameters = {
                     @Parameter(name = "taxname", description = "Tax name for which you need to get results", required = true)
             }
@@ -72,7 +69,8 @@ public class PredictionController {
 
     @Operation(
             summary = "Confirm prediction",
-            description = ""
+            description = "Confirmation or cancelling prediction result. " +
+                    "Must provide result code that was given on "
     )
     @PostMapping("confirm")
     public void uploadDecision(@RequestBody PredictionConfirmDTO predictionConfirmDTO){

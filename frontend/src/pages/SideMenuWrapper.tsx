@@ -21,25 +21,33 @@ export function SideMenuWrapper(props : SideMenuWrapperProps) {
                 component={Paper}
                 elevation={2}
             >
-                <Typography
-                    variant='h6'
-                    align='center'
-                    sx={{
-                        fontWeight: "bold",
-                        marginTop: 5,
-                        marginBottom: 5
-                    }}>
-                    Tax prediction
-                </Typography>
+                <Button
+                onClick={route.routeToMainPage}
+                sx={{
+                    textTransform: "none",
+                    width: "100%",
+                    color: "black"
+                }}>
+                    <Typography
+                        variant='h5'
+                        align='center'
+                        sx={{
+                            fontWeight: "bold",
+                            marginTop: 5,
+                            marginBottom: 5
+                        }}>
+                        Tax prediction
+                    </Typography>
+                </Button>
                 <Box
                     sx={{
                     mx: 5,
                     display: "flex",
                     flexDirection: 'column',
-                    justifyContent: "flex-start"
+                    justifyContent: "flex-start",
+                    borderTop: 1
                     }}
                 >
-                    <MenuItem text='Главная' onClick={route.routeToMainPage}/>
                     <MenuItem text='Выполнить прогноз' href={appRoutes.prediction} onClick={route.routeToPredictionPage}/>
                     <MenuItem text='Посмотреть результаты' href={appRoutes.results} onClick={route.routeToResultsPage}/>
                     <MenuItem text='Посмотреть данные' href={appRoutes.taxes} onClick={route.routeToTaxesPage}/>

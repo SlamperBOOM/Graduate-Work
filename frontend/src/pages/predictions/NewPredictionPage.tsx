@@ -278,15 +278,15 @@ function ResultsNode(props: ResultsNodeProps){
             <Dialog
                 open={openDialog}
                 onClose={() => window.location.reload()}>
-                    <DialogContent>
-                        <DialogContentText>
-                            {dialogText}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => window.location.reload()}>Ок</Button>
-                    </DialogActions>
-                </Dialog>
+                <DialogContent>
+                    <DialogContentText>
+                        {dialogText}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => window.location.reload()}>Ок</Button>
+                </DialogActions>
+            </Dialog>
             <Box
             display="flex"
             justifyContent="center"

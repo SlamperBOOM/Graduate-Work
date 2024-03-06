@@ -3,13 +3,23 @@ import { ResultDTO } from '../../DTOs/ResultDTO';
 import { LineChart } from '@mui/x-charts';
 import { DataGrid } from "@mui/x-data-grid";
 import { useCallback } from 'react';
+import { useUtility } from '../../hooks/useUtility';
 
 export function PredictionResultView(props : PredictionResultViewProps) {
     const result = props.result;
+    const utils = useUtility();
 
     const exportToXML = useCallback(() => {
-        console.log(JSON.stringify(result));
-    }, []);
+        const resultCopy = result;
+        resultCopy.predictionValues.map((val, i) => {val.date = utils.formatDate(new Date(parseInt(val.date)))});
+        resultCopy.referenceValues.map((val, i) => {val.date = utils.formatDate(new Date(parseInt(val.date)))});
+        const textFile = new Blob([JSON.stringify(resultCopy, null, 2)], {type: 'application/json'});
+
+        const element = document.createElement("a");
+        element.href = URL.createObjectURL(textFile);
+        element.download = resultCopy.taxName + "_" + resultCopy.methodName + "_prediction.json";
+        element.click();
+    }, [result, utils]);
 
     return (
         <Box

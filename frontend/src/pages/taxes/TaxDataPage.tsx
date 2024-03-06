@@ -1,6 +1,6 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { SideMenuWrapper } from "../SideMenuWrapper";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabContext, TabPanel } from "@mui/lab";
 import { TaxesInfoTab } from "./tabs/TaxesInfoTab";
 import { FactorInfoTab } from "./tabs/FactorInfoTab";
