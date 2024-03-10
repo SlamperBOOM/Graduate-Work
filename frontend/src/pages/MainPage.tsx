@@ -1,6 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import { useRoute } from "../hooks/useRoute";
 
 export function MainPage() {
+    const route = useRoute();
+
     return (
         <Box
         margin={2}>
@@ -41,6 +44,16 @@ export function MainPage() {
                         variant="h5">
                         Получение прогноза
                     </Typography>
+                    <Typography
+                    align="center"
+                    variant="body1"
+                    whiteSpace="break-spaces">
+                        
+                    </Typography>
+                    <Button
+                    variant="contained">
+                        Перейти к получению прогноза
+                    </Button>
                 </Box>
                 <Box
                 sx={{
