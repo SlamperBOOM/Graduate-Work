@@ -41,6 +41,10 @@ public class ImplementedEntitiesService {
         return implementedAlgorithms.keySet();
     }
 
+    public Collection<String> getImplementedErrorsNames(){
+        return implementedErrors.keySet();
+    }
+
     public MathError getMathErrorByName(String name){
         return implementedErrors.get(name);
     }

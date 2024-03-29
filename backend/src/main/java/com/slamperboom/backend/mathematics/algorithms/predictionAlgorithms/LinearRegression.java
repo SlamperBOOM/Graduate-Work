@@ -43,10 +43,10 @@ public class LinearRegression implements PredictionAlgorithm {
         double[] weights = new double[factorsCount];
         double bestError = Double.MAX_VALUE;
         MathError mathError = new MRSEError();
-        double sigmoidParam = parameters.getParameter("sigmoidParam").get(0);
-        double outputErrorParam = parameters.getParameter("outputErrorParam").get(0);
-        for(double epochs : parameters.getParameter("epochs")){
-            for(double learningRate: parameters.getParameter("learningRate")) {
+        double sigmoidParam = parameters.getParameterValues("sigmoidParam").get(0);
+        double outputErrorParam = parameters.getParameterValues("outputErrorParam").get(0);
+        for(double epochs : parameters.getParameterValues("epochs")){
+            for(double learningRate: parameters.getParameterValues("learningRate")) {
 
                 for(int i=0; i<weights.length; ++i){
                     weights[i] = Math.random();
@@ -170,7 +170,7 @@ public class LinearRegression implements PredictionAlgorithm {
         }
 
         @Override
-        public List<Double> getParameter(String paramName) {
+        public List<Double> getParameterValues(String paramName) {
             switch (paramName){
                 case "learningRate" -> {
                     return learningRateVariants;

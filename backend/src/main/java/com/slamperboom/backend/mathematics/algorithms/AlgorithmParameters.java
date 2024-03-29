@@ -8,7 +8,7 @@ public interface AlgorithmParameters {
         return Collections.emptyList();
     }
     default void parseParameters(List<String> stringParams){}
-    default List<Double> getParameter(String paramName){
+    default List<Double> getParameterValues(String paramName){
         return Collections.emptyList();
     }
 }

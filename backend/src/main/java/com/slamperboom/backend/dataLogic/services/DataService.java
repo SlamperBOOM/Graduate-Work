@@ -103,6 +103,23 @@ public class DataService implements IMathDataService, IControllerDataService {
     @Override
     public List<PredictionResult> getResultsForTax(String taxName){
         List<List<MathError>> errorsForAlgorithms = getErrorsForTaxPredictions(taxName);
+        //сохранится ли записанное значение при таком варианте?
+        for(String currentError: implementedEntitiesService.getImplementedErrorsNames()){
+            List<MathError> currentErrors = errorsForAlgorithms.stream().map(l ->
+                    l.stream().filter(e -> e.getErrorName().equals(currentError)).findFirst().orElse(null)
+            ).toList();
+
+            MathError bestError = currentErrors.get(0);
+            for(MathError error: currentErrors){
+                if(error != null && implementedEntitiesService.getMathErrorByName(error.getErrorName())
+                        .compareTo(error.getValue(), bestError.getValue())){
+                    bestError = error;
+                }
+            }
+            MathError finalBestError = bestError;
+            currentErrors.forEach(mathError -> mathError.setBetter(mathError == finalBestError));
+        }
+
         List<PredictionResult> results = fetchResultsForTax(fetchValuesForAlgorithm(taxName), taxName);
         for(PredictionResult predictionResult : results){
             predictionResult.setMathErrors(errorsForAlgorithms.stream()
