@@ -108,10 +108,13 @@ public class DataService implements IMathDataService, IControllerDataService {
             List<MathError> currentErrors = errorsForAlgorithms.stream().map(l ->
                     l.stream().filter(e -> e.getErrorName().equals(currentError)).findFirst().orElse(null)
             ).toList();
-
+            currentErrors = currentErrors.stream().filter(Objects::nonNull).toList();
+            if(currentErrors.isEmpty()){
+                continue;
+            }
             MathError bestError = currentErrors.get(0);
             for(MathError error: currentErrors){
-                if(error != null && implementedEntitiesService.getMathErrorByName(error.getErrorName())
+                if(implementedEntitiesService.getMathErrorByName(error.getErrorName())
                         .compareTo(error.getValue(), bestError.getValue())){
                     bestError = error;
                 }

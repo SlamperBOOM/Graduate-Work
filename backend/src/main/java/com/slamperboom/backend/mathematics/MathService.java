@@ -26,7 +26,13 @@ public class MathService {
         parameters.parseParameters(params);
         AlgorithmValues values = dataService.fetchValuesForAlgorithm(taxName);
         //делаем прогноз
-        List<Double> prediction = algorithm.makePrediction(values, parameters);
+        List<Double> prediction;
+        try {
+            prediction = algorithm.makePrediction(values, parameters);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new PredictionException(PredictionCodes.predictionError);
+        }
         if(prediction.isEmpty()){
             throw new PredictionException(PredictionCodes.predictionError);
         }

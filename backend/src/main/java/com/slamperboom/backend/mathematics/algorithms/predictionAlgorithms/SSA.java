@@ -25,7 +25,7 @@ public class SSA implements PredictionAlgorithm {
 
     @Override
     public AlgorithmParameters getParameters() {
-        return null;
+        return new SSAParameters();
     }
 
     @Override

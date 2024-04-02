@@ -70,7 +70,7 @@ public class PredictionController {
     @Operation(
             summary = "Confirm prediction",
             description = "Confirmation or cancelling prediction result. " +
-                    "Must provide result code that was given on "
+                    "Must provide result code that was given on predict request"
     )
     @PostMapping("confirm")
     public void uploadDecision(@RequestBody PredictionConfirmDTO predictionConfirmDTO){

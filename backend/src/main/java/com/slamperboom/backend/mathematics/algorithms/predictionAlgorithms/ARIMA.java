@@ -1,46 +1,263 @@
 package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 
-import com.slamperboom.backend.exceptions.errorCodes.PredictionCodes;
-import com.slamperboom.backend.exceptions.exceptions.PredictionException;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
+import com.slamperboom.backend.mathematics.mathErrors.MRSEError;
+import com.slamperboom.backend.mathematics.mathErrors.MathError;
 import com.slamperboom.backend.mathematics.resultData.ResultParameter;
+import org.apache.commons.math3.linear.*;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 public class ARIMA implements PredictionAlgorithm {
     private static final String methodName = "ARIMA";
+    private static final int maxP = 5;
+    private static final int maxQ = 5;
+    private static final int maxD = 3;
     private int bestP;
     private int bestD;
     private int bestQ;
+    private int currentD;
 
     @Override
     public List<Double> makePrediction(AlgorithmValues referenceValues, AlgorithmParameters parameters) {
-        List<Integer> pParams = parameters.getParameterValues("p").stream().map(Double::intValue).toList();
-        List<Integer> dParams = parameters.getParameterValues("d").stream().map(Double::intValue).toList();
-        int qParam = parameters.getParameterValues("q").get(0).intValue();
         List<Double> values = referenceValues.getReference();
         double bestMSE = Double.MAX_VALUE;
         List<Double> bestPredict = new LinkedList<>();
-
-        //Определять параметр d и вычислять разности
-
-        //Вычислять коэффициенты для модели AR и считать AR часть
-
-        //Вычислять MA часть
-
+        MathError mse = new MRSEError();
+        for(int p = 0; p <= maxP; ++p){
+            for(int q = 0; q <= maxQ; ++q){
+                //Сделать различные проверки, чтобы не прогонять невозможные варианты
+                List<Double> prediction = makePrediction(values, p, q);
+                double currentError = mse.calcError(values, prediction);
+                if(mse.compareTo(currentError, bestMSE)){
+                    bestMSE = currentError;
+                    bestPredict = prediction;
+                    bestP = p;
+                    bestQ = q;
+                    bestD = currentD;
+                }
+            }
+        }
         return bestPredict;
     }
 
-    private double[] inverseList(List<Double> values){
-        double[] array = new double[values.size()];
-        for(int i=0; i<values.size(); ++i){
-            array[i] = values.get(values.size()-1-i);
+    private List<Double> makePrediction(List<Double> values, int p, int q){
+
+        //Делаем разницы по необходимости
+        List<List<Double>> timeSeries = integrationPart(values, p);
+        List<Double> workList = timeSeries.get(timeSeries.size()-1);
+        System.out.format("P: %d, D: %d, Q: %d%n", p, timeSeries.size()-1, q);
+        //Вычислять коэффициенты для модели AR и считать AR часть
+
+        List<Double> arPart = arPart(workList, p);
+        System.out.println(arPart);
+        //Вычислять MA часть
+        List<Double> maPart = maPart(workList, q);
+        System.out.println(maPart);
+
+        //Сложить все и вернуть к изначальному варианту
+        return getResult(arPart, maPart, timeSeries);
+    }
+
+    private List<List<Double>> integrationPart(List<Double> values, int p){
+        List<List<Double>> timeSeries = new ArrayList<>();
+        timeSeries.add(values);
+        currentD = 0;
+        while(!isStationery(timeSeries.get(timeSeries.size()-1), p) && currentD < maxD){
+            List<Double> currentList = timeSeries.get(timeSeries.size()-1);
+            List<Double> newList = new ArrayList<>();
+            for(int i=0; i<currentList.size()-1; ++i){
+                newList.add(currentList.get(i+1) - currentList.get(i));
+            }
+            timeSeries.add(newList);
+            currentD++;
         }
-        return array;
+        return timeSeries;
+    }
+
+    private boolean isStationery(List<Double> values, int k){
+        //вычислять стационарность ряда через ACF
+        double mean = mean(values);
+        List<Double> acfValues = new ArrayList<>();
+        for(int i=0; i<values.size(); ++i){
+            double sum = 0;
+            for(int p=0; p<values.size()-i; ++p){
+                sum += (values.get(p)-mean)*(values.get(p+i)-mean);
+            }
+            sum /= values.size();
+            acfValues.add(sum);
+        }
+        double s0 = acfValues.get(0);
+        acfValues = acfValues.stream().map(aDouble -> aDouble/s0).toList();
+        //нужно проанализировать acfValues и понять, является ряд стационарным или нет
+        for(int i=k+1; i<acfValues.size(); ++i){
+            if(acfValues.get(i) > 0.25){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private double mean(List<Double> values){
+        if(values.isEmpty()){
+            return .0;
+        }
+        double mean = 0;
+        for(double val: values){
+            mean += val;
+        }
+        return mean/values.size();
+    }
+
+    private List<Double> arPart(List<Double> workList, int p){
+        if(p == 0){
+            List<Double> result = new ArrayList<>(workList);
+            result.add((result.get(result.size()-1) + result.get(result.size()-2))/2);
+            return result;
+        }
+        double[] coeffs;
+        RealMatrix matrixX = getMatrixXForAR(workList, p);
+        RealVector vectorY = new ArrayRealVector();
+        for (int i = p; i < workList.size(); ++i) {
+            vectorY = vectorY.append(workList.get(i));
+        }
+        coeffs = MatrixUtils.inverse(matrixX.transpose().multiply(matrixX))
+                .multiply(matrixX.transpose()).operate(vectorY).toArray();
+        System.out.println(Arrays.toString(coeffs));
+
+        List<Double> copyOfWorkList = new ArrayList<>(workList);
+        for(int i=1; i<=p; ++i){
+            copyOfWorkList.add(0, calcPrevSeriesValue(coeffs, i));
+        }
+        System.out.println(copyOfWorkList);
+        List<Double> arPart = new ArrayList<>();
+        for(int i=p-1; i<copyOfWorkList.size(); ++i){
+            double val = coeffs[0];
+            for(int k=0; k<p; ++k){
+                val += coeffs[k+1] * copyOfWorkList.get(i-k);
+            }
+            arPart.add(val);
+        }
+        return arPart;
+    }
+
+    private double calcPrevSeriesValue(double[] coeffs, int p){
+        double sum = 0;
+        for(int i=1; i<=p; ++i){
+            sum += coeffs[i];
+        }
+        return coeffs[0]/(1 - sum);
+    }
+
+    private RealMatrix getMatrixXForAR(List<Double> workList, int p) {
+        RealMatrix matrixX = new Array2DRowRealMatrix(workList.size()-p, p+1);
+        RealVector zeroVector = new ArrayRealVector(workList.size()-p);
+        zeroVector.set(1);
+        matrixX.setColumnVector(0, zeroVector);
+        for(int i = p; i < workList.size(); ++i){
+            for(int j = 1; j < p +1; ++j){
+                matrixX.setEntry(i-p, j, workList.get(i-j+1));
+            }
+        }
+        return matrixX;
+    }
+
+    private List<Double> maPart(List<Double> workList, int q){
+        if(q == 0){
+            return simpleMA(workList);
+        }
+
+        List<Double> maPart = new ArrayList<>();
+        List<Double> workingSubList = new LinkedList<>(workList.subList(0, q));
+        double mean = mean(workingSubList);
+
+        List<Double> errors = new ArrayList<>();
+        double[] coeffs;
+        if(q == 1){
+            errors.add(workList.get(0) - mean);
+            coeffs = new double[]{0.5};
+        }else{
+            RealMatrix matrixA = new Array2DRowRealMatrix(q, q);
+            for(int i=0; i<q; ++i){
+                errors.add(workList.get(i) - mean);
+                RealVector equation = new ArrayRealVector(q);
+                equation.set(0);
+                for(int k=0; k<i+1; ++k){
+                    equation.setEntry(k, errors.get(k));
+                }
+                matrixA.setRowVector(i, equation);
+            }
+            RealVector vectorY = new ArrayRealVector(q);
+            for(int i=0; i<q; ++i){
+                vectorY.setEntry(i, workList.get(i));
+            }
+            DecompositionSolver solver = new QRDecomposition(matrixA).getSolver();
+            coeffs = solver.solve(vectorY).toArray();
+        }
+
+
+        for(int i=0; i<q; ++i){
+            double sum = 0;
+            for(int k=0; k<i+1; ++k){
+                sum += coeffs[k]*errors.get(k);
+            }
+            maPart.add(sum+mean);
+        }
+        for(int i=q; i<workList.size(); ++i){
+            workingSubList.remove(0);
+            workingSubList.add(workList.get(i));
+            mean = mean(workingSubList);
+            errors.clear();
+            for(double val: workingSubList){
+                errors.add(val - mean);
+            }
+            double sum = 0;
+            for(int k=0; k<q; ++k){
+                sum += coeffs[k]*errors.get(k);
+            }
+            maPart.add(sum+mean);
+        }
+        maPart.add((maPart.get(maPart.size()-1) * 3 - maPart.get(maPart.size()-2))/2);
+        return maPart;
+    }
+
+    private List<Double> simpleMA(List<Double> workList){
+        double paramS = 2;
+        List<Double> result = new ArrayList<>();
+        result.add(workList.get(0));
+        for(int i=1; i<workList.size(); ++i){
+            double today = workList.get(i) * (paramS / (1 + workList.size()));
+            double yesterday = result.get(i-1) * (1 - (paramS / (1 + workList.size())));
+            result.add(today+yesterday);
+        }
+        result.add((result.get(result.size()-1) * 3 - result.get(result.size()-2))/2);
+        return result;
+    }
+
+    private List<Double> getResult(List<Double> arPart, List<Double> maPart, List<List<Double>> timeSeries) {
+        List<Double> result = new ArrayList<>(arPart);
+        for(int i=0; i<result.size(); ++i){
+            result.set(i, result.get(i) + maPart.get(i));
+        }
+        if(timeSeries.size() == 1){
+            return result;
+        }
+        for(int i = timeSeries.size()-1; i>=0; --i){
+            List<Double> newList = new ArrayList<>();
+            newList.add(timeSeries.get(i).get(0));
+            for(int k=0; k < result.size(); ++k){
+                newList.add(newList.get(k) + result.get(k));
+            }
+            result = newList;
+        }
+        return result;
     }
 
     @Override
@@ -57,9 +274,9 @@ public class ARIMA implements PredictionAlgorithm {
     public String getDescription() {
         return """
                 Алгоритм ARIMA, состоящий из 3 моделей:
-                1. AR - авторегрессия
-                2. I - интегрирующая
-                3. MA - скользящее среднее
+                1. AR - авторегрессия. Порядок авторегрессии регулируется параметром p, который будет показан в результате прогноза;
+                2. I - интегрирующая. Порядок интегрирования регулируется параметром d;
+                3. MA - скользящее среднее. Порядок скользящего среднего регулируется параметром q;
                 """;
     }
 
@@ -72,101 +289,5 @@ public class ARIMA implements PredictionAlgorithm {
         return parameters;
     }
 
-    private static class ARIMAParameters implements AlgorithmParameters{
-        private static final List<String> paramsNames = List.of(
-                "P - порядок авторегрессии (можно перечислить несколько значений через ';')",
-                "D - порядок интегрирования (можно перечислить несколько значений через ';')",
-                "Q - порядок скользящего среднего");
-        private List<Double> paramP;
-        private List<Double> paramD;
-        private List<Double> paramQ;
-
-        @Override
-        public List<String> getParametersNames() {
-            return paramsNames;
-        }
-
-        @Override
-        public void parseParameters(List<String> stringParams) {
-            try {
-                paramP = Arrays.stream(stringParams.get(0).split(";")).map(Double::parseDouble).sorted().toList();
-                paramD = Arrays.stream(stringParams.get(1).split(";")).map(Double::parseDouble).sorted().toList();
-                paramQ = List.of(Double.parseDouble(stringParams.get(2)));
-            }catch (NumberFormatException e){
-                throw new PredictionException(PredictionCodes.wrongParameterFormat);
-            }
-        }
-
-        @Override
-        public List<Double> getParameterValues(String paramName) {
-            switch (paramName){
-                case "p" -> {return paramP;}
-                case "d" -> {return paramD;}
-                case "q" -> {return paramQ;}
-                default -> {return Collections.emptyList();}
-            }
-        }
-    }
-
-    private static class NeuralNet {
-        private final List<List<Double>> factors;
-        private final List<Double> references;
-
-        public NeuralNet(List<Double> referenceValues, List<List<Double>> factors){
-            if(factors == null || referenceValues == null){
-                throw new ArrayStoreException("No lists were passed");
-            }
-            if(factors.size() != referenceValues.size()){
-                throw new ArrayStoreException("List sizes are different");
-            }
-            this.factors = factors;
-            this.references = referenceValues;
-        }
-
-        public double[] linearRegression(double learningRate, int epochs){
-            double[] weights = new double[factors.get(0).size()];
-            int factorsCount = factors.get(0).size();
-            for(int i=0; i<weights.length; ++i){
-                weights[i] = Math.random();
-            }
-            for(int k=0; k<epochs; ++k){
-                for(int i=0; i<references.size(); ++i){//main body
-
-                    double referenceValue = sigmoid(references.get(i));
-                    List<Double> currentFactors = new ArrayList<>(factors.get(i));
-                    double predicted = 0;
-                    for(int j = 0; j< factorsCount; ++j){
-                        predicted += currentFactors.get(j)*weights[j];
-                    }
-                    double error = outputError(referenceValue, sigmoid(predicted));
-                    for(int j=0; j< factorsCount; ++j){
-                        double adding = error * sigmoidDerivative(predicted) * currentFactors.get(j) * learningRate;
-                        weights[j] += adding;
-                    }
-                }
-            }
-            return weights;
-        }
-
-        public double calcNewValueLinear(List<Double> factorList, double[] weights){
-            double value = 0;
-            for(int i=0; i<factorList.size(); ++i){
-                value += weights[i]*factorList.get(i);
-            }
-            return value;
-        }
-
-        private double sigmoid(double x){
-            return 1.0/(1+Math.pow(Math.E, -x/5000));
-        }
-
-        private double sigmoidDerivative(double x){
-            double sig = sigmoid(x);
-            return sig*(1-sig);
-        }
-
-        private double outputError(double expected, double predicted){
-            return Math.signum(expected - predicted)*Math.pow(Math.abs(expected - predicted), 1.0/5);
-        }
-    }
+    private static class ARIMAParameters implements AlgorithmParameters{}
 }
