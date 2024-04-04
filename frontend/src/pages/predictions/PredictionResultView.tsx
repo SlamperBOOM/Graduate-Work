@@ -215,7 +215,7 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             editable: false,
                             headerAlign: "center",
                             align: "center",
-                            valueGetter: ({value}) => value && (value === null ? "" : value ? "Лучше" : "Хуже"),
+                            valueGetter: ({value}) => value === null ? "" : (value ? "Лучше" : "Хуже"),
                         }
                     ]}
                     rows={result.mathErrors.map((v, i) => ({

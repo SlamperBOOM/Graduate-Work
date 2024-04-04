@@ -1,10 +1,7 @@
 package com.slamperboom.backend.controllers;
 
 import com.slamperboom.backend.dataLogic.services.IControllerDataService;
-import com.slamperboom.backend.frontendDTO.AlgorithmDTO;
-import com.slamperboom.backend.frontendDTO.PredictionConfirmDTO;
-import com.slamperboom.backend.frontendDTO.PredictionForFrontendDTO;
-import com.slamperboom.backend.frontendDTO.PredictionRequestDTO;
+import com.slamperboom.backend.frontendDTO.*;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.MathService;
 import com.slamperboom.backend.mathematics.resultData.PredictionResult;
@@ -19,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Prediction controller", description = "Make predictions and fetch related data")
+@Tag(name = "Prediction API", description = "Make predictions and fetch related data")
 @RestController
 @RequestMapping("prediction")
 @RequiredArgsConstructor
@@ -32,7 +29,7 @@ public class PredictionController {
     @Operation(
             summary = "Make prediction with parameters",
             description = "Making prediction for tax using algorithm and its parameters. All fields must be specified in request body. " +
-                    "You can get available algorithms with its parameters description (if any specified) with /*link to algorithms method*/. " +
+                    "You can get available algorithms with its parameters description (if any specified) with /prediction/algorithms. " +
                     "You must confirm or regret result got with this method by making request to /*link to confirm method*/"
     )
     @ApiResponse(responseCode = "200")
@@ -41,21 +38,20 @@ public class PredictionController {
             content = @Content(schema = @Schema()))
     @PostMapping("predict")
     public PredictionForFrontendDTO makePrecision(@RequestBody PredictionRequestDTO requestDTO){
-        return new PredictionForFrontendDTO(resultCodeManager.getNextUid(),
-                mathService.makePrediction(requestDTO.taxName(), requestDTO.methodName(), requestDTO.params())
-                        .stream().map(PredictionResult::mapToResultDTO).toList());
+        List<PredictionResultDTO> results = mathService.makePrediction(requestDTO.taxName(), requestDTO.methodName(), requestDTO.params())
+                .stream().map(PredictionResult::mapToResultDTO).toList();
+        return new PredictionForFrontendDTO(resultCodeManager.getNextUid(results.get(0)), results);
     }
 
     @Operation(
-            summary = "Get already done predictions for tax",
-            description = "Gives all done predictions for tax",
+            summary = "Get all done predictions for tax",
             parameters = {
                     @Parameter(name = "taxname", description = "Tax name for which you need to get results", required = true)
             }
     )
     @GetMapping("predicts/get")
-    public List<PredictionResult> getPredictionsForTax(@RequestParam(name = "taxname") String taxName){
-        return dataService.getResultsForTax(taxName);
+    public List<PredictionResultDTO> getPredictionsForTax(@RequestParam(name = "taxname") String taxName){
+        return dataService.getResultsForTax(taxName).stream().map(PredictionResult::mapToResultDTO).toList();
     }
 
     @Operation(
@@ -74,9 +70,9 @@ public class PredictionController {
     )
     @PostMapping("confirm")
     public void uploadDecision(@RequestBody PredictionConfirmDTO predictionConfirmDTO){
-        if(resultCodeManager.checkUid(predictionConfirmDTO.resultCode()) &&
-            predictionConfirmDTO.resultDTO() != null) {
-            dataService.savePredictionResult(PredictionResult.mapToPredictionResult(predictionConfirmDTO.resultDTO()));
+        PredictionResultDTO resultDTO = resultCodeManager.checkUid(predictionConfirmDTO.resultCode());
+        if(predictionConfirmDTO.confirm()) {
+            dataService.savePredictionResult(PredictionResult.mapToPredictionResult(resultDTO));
         }
     }
 }

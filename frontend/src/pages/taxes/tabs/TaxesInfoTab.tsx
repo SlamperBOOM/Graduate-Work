@@ -27,6 +27,7 @@ export function TaxesInfoTab(){
             taxName: currentTax,
             factorName: factorToLink
         }).then(() => {
+            localStorage.setItem(innerStorageMembers.lastTax, currentTax);
             window.location.reload();
         })
     }, [taxesApi, currentTax, factorToLink]);

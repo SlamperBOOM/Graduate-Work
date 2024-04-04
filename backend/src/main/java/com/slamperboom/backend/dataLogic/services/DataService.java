@@ -107,8 +107,7 @@ public class DataService implements IMathDataService, IControllerDataService {
         for(String currentError: implementedEntitiesService.getImplementedErrorsNames()){
             List<MathError> currentErrors = errorsForAlgorithms.stream().map(l ->
                     l.stream().filter(e -> e.getErrorName().equals(currentError)).findFirst().orElse(null)
-            ).toList();
-            currentErrors = currentErrors.stream().filter(Objects::nonNull).toList();
+            ).filter(Objects::nonNull).toList();
             if(currentErrors.isEmpty()){
                 continue;
             }

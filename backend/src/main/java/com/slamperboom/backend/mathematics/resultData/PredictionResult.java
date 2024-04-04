@@ -1,6 +1,6 @@
 package com.slamperboom.backend.mathematics.resultData;
 
-import com.slamperboom.backend.frontendDTO.ResultDTO;
+import com.slamperboom.backend.frontendDTO.PredictionResultDTO;
 import lombok.*;
 
 import java.util.Date;
@@ -50,8 +50,8 @@ public class PredictionResult {
                 parameters);
     }
 
-    public static ResultDTO mapToResultDTO(PredictionResult resultDTO){
-        return new ResultDTO(resultDTO.getTaxName(),
+    public static PredictionResultDTO mapToResultDTO(PredictionResult resultDTO){
+        return new PredictionResultDTO(resultDTO.getTaxName(),
                 resultDTO.getMethodName(),
                 resultDTO.getReferenceValues(),
                 resultDTO.getPredictionValues(),
@@ -59,13 +59,13 @@ public class PredictionResult {
                 resultDTO.getParameters());
     }
 
-    public static PredictionResult mapToPredictionResult(ResultDTO resultDTO){
-        return new PredictionResult(resultDTO.taxName(),
-                resultDTO.methodName(),
-                resultDTO.referenceValues(),
-                resultDTO.predictionValues(),
-                resultDTO.mathErrors(),
-                resultDTO.parameters());
+    public static PredictionResult mapToPredictionResult(PredictionResultDTO predictionResultDTO){
+        return new PredictionResult(predictionResultDTO.taxName(),
+                predictionResultDTO.methodName(),
+                predictionResultDTO.referenceValues(),
+                predictionResultDTO.predictionValues(),
+                predictionResultDTO.mathErrors(),
+                predictionResultDTO.parameters());
     }
 
     private static List<SeriesValue> convertSeries(List<Date> dates,

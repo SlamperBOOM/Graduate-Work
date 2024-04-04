@@ -18,8 +18,8 @@ export function usePredictionApi(){
         return (await api.performPostRequest(baseAddress + "predict", body)) as PredictionForFrontend;
     }, [api]);
 
-    const saveResult = useCallback(async (resultCode: string, body?: ResultDTO) => {
-        await api.performPostRequest(baseAddress + "confirm", {resultCode: resultCode, resultDTO: body ? body : null} as PredictionConfirmDTO);
+    const saveResult = useCallback(async (resultCode: string, confirm: boolean) => {
+        await api.performPostRequest(baseAddress + "confirm", {resultCode: resultCode, confirm: confirm} as PredictionConfirmDTO);
     }, [api]);
 
     const getResultsForTax = useCallback(async(taxName: string) => {

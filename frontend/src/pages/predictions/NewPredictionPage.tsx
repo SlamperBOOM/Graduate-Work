@@ -259,12 +259,12 @@ function ResultsNode(props: ResultsNodeProps){
 
     const saveResult = useCallback((save: boolean) => {
         if(save){
-            predictionApi.saveResult(props.resultCode, prediction).then(() => {
+            predictionApi.saveResult(props.resultCode, true).then(() => {
                 setDialogText("Прогноз успешно сохранен");
                 setOpenDialog(true);
             });
         }else{
-            predictionApi.saveResult(props.resultCode).then(() => {
+            predictionApi.saveResult(props.resultCode, false).then(() => {
                 props.blockSetter(<></>);
             });
         }
