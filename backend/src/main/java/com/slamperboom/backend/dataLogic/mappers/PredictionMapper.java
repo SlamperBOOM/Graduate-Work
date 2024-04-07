@@ -3,9 +3,11 @@ package com.slamperboom.backend.dataLogic.mappers;
 import com.slamperboom.backend.dataLogic.entities.predictions.Prediction;
 import com.slamperboom.backend.dataLogic.entities.predictions.PredictionError;
 import com.slamperboom.backend.dataLogic.entities.predictions.PredictionParameter;
-import com.slamperboom.backend.dataLogic.views.predictions.PredictionView;
+import com.slamperboom.backend.dataLogic.entities.predictions.PredictionValue;
+import com.slamperboom.backend.dataLogic.views.predictions.PredictionValueView;
 import com.slamperboom.backend.mathematics.resultData.MathError;
 import com.slamperboom.backend.mathematics.resultData.ResultParameter;
+import com.slamperboom.backend.mathematics.resultData.SeriesValue;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -15,17 +17,8 @@ import java.util.List;
 @Component
 public class PredictionMapper {
 
-    public PredictionView fromPredictionToView(Prediction prediction){
-        return new PredictionView(prediction.getTaxName(), prediction.getMethodName(), prediction.getDate(), prediction.getValue());
-    }
-
-    public Prediction fromViewToPrediction(PredictionView view){
-        Prediction prediction = new Prediction();
-        prediction.setTaxName(view.taxName());
-        prediction.setMethodName(view.methodName());
-        prediction.setDate(view.date());
-        prediction.setValue(view.value());
-        return prediction;
+    public PredictionValueView fromValueToView(PredictionValue value){
+        return new PredictionValueView(value.getPrediction().getMethodName(), value.getDate(), value.getValue());
     }
 
     public List<ResultParameter> fromParameterToDTO(String parameter){
@@ -39,31 +32,34 @@ public class PredictionMapper {
         }
     }
 
-    public MathError fromPredictionErrorToDTO(PredictionError error){
-        return new MathError(error.getMethodName(), error.getErrorName(), error.getValue());
+    public MathError fromErrorToDTO(PredictionError error){
+        return new MathError(error.getPrediction().getMethodName(), error.getErrorName(), error.getValue());
     }
 
-    public PredictionError fromDTOToPredictionError(String taxName, MathError errorDTO){
-        PredictionError error = new PredictionError();
-        error.setTaxName(taxName);
-        error.setMethodName(errorDTO.getMethodName());
-        error.setErrorName(errorDTO.getErrorName());
-        error.setValue(errorDTO.getValue());
-        return error;
+    public PredictionError fromDTOToError(MathError error, Prediction prediction){
+        PredictionError predictionError = new PredictionError();
+        predictionError.setPrediction(prediction);
+        predictionError.setErrorName(error.getErrorName());
+        predictionError.setValue(error.getValue());
+        return predictionError;
     }
 
-    public PredictionParameter fromDTOToPredictionParameter(String taxName,
-                                                            String methodName,
-                                                            List<ResultParameter> parameters){
-        PredictionParameter predictionParameter = new PredictionParameter();
-        predictionParameter.setTaxName(taxName);
-        predictionParameter.setMethodName(methodName);
+    public PredictionValue fromSeriesToValue(SeriesValue value, Prediction prediction){
+        PredictionValue predictionValue = new PredictionValue();
+        predictionValue.setPrediction(prediction);
+        predictionValue.setDate(value.date());
+        predictionValue.setValue(value.value());
+        return predictionValue;
+    }
 
-        StringBuilder builder = new StringBuilder();
-        for(ResultParameter parameterDTO: parameters){
-            builder.append(parameterDTO.paramName()).append("=").append(parameterDTO.value()).append(";");
+    public PredictionParameter fromDTOToPredictionParameter(Prediction prediction, List<ResultParameter> resultParameters){
+        PredictionParameter parameter = new PredictionParameter();
+        parameter.setPrediction(prediction);
+        StringBuilder builder = new StringBuilder(255);
+        for(ResultParameter resultParameter: resultParameters){
+            builder.append(resultParameter.paramName()).append("=").append(resultParameter.value()).append(";");
         }
-        predictionParameter.setParameters(builder.toString());
-        return predictionParameter;
+        parameter.setParameters(builder.toString());
+        return parameter;
     }
 }

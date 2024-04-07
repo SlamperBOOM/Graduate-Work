@@ -30,7 +30,7 @@ public class PredictionController {
             summary = "Make prediction with parameters",
             description = "Making prediction for tax using algorithm and its parameters. All fields must be specified in request body. " +
                     "You can get available algorithms with its parameters description (if any specified) with /prediction/algorithms. " +
-                    "You must confirm or regret result got with this method by making request to /*link to confirm method*/"
+                    "You must confirm or reject result got with this method by making request to /*link to confirm method*/"
     )
     @ApiResponse(responseCode = "200")
     @ApiResponse(responseCode = "500",

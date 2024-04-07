@@ -4,21 +4,21 @@ import com.slamperboom.backend.dataLogic.entities.IdEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+
+import java.util.Date;
 
 @Entity
-@Table(name = "errors")
+@Table(name = "prediction_values")
 @Getter
 @Setter
-@ToString
-public class PredictionError extends IdEntity {
+public class PredictionValue extends IdEntity {
     @JoinColumn(name = "prediction")
     @ManyToOne(targetEntity = Prediction.class, fetch = FetchType.LAZY)
     private Prediction prediction;
 
-    @Column(name = "errorName")
-    private String errorName;
+    @Column(name = "date")
+    private Date date;
 
-    @Column(name = "errorValue")
+    @Column(name = "value")
     private Double value;
 }

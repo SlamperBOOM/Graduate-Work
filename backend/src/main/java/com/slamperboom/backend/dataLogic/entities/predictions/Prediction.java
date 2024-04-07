@@ -1,28 +1,20 @@
 package com.slamperboom.backend.dataLogic.entities.predictions;
 
 import com.slamperboom.backend.dataLogic.entities.IdEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.slamperboom.backend.dataLogic.entities.taxes.Tax;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Entity
 @Table(name = "predictions")
 @Getter
 @Setter
 public class Prediction extends IdEntity {
-    @Column(name = "taxName")
-    private String taxName;
+    @JoinColumn(name = "tax")
+    @ManyToOne(targetEntity = Tax.class, fetch = FetchType.LAZY)
+    private Tax tax;
 
     @Column(name = "methodName")
     private String methodName;
-
-    @Column(name = "date")
-    private Date date;
-
-    @Column(name = "value")
-    private Double value;
 }

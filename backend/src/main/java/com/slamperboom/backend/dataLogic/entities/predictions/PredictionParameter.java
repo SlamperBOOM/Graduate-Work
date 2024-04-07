@@ -1,9 +1,7 @@
 package com.slamperboom.backend.dataLogic.entities.predictions;
 
 import com.slamperboom.backend.dataLogic.entities.IdEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,11 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PredictionParameter extends IdEntity {
-    @Column(name = "taxName")
-    private String taxName;
-
-    @Column(name = "methodName")
-    private String methodName;
+    @JoinColumn(name = "prediction")
+    @ManyToOne(targetEntity = Prediction.class, fetch = FetchType.LAZY)
+    private Prediction prediction;
 
     @Column(name = "params")
     private String parameters;

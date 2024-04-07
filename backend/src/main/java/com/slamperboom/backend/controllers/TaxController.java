@@ -4,9 +4,9 @@ import com.slamperboom.backend.dataLogic.entities.taxes.TaxType;
 import com.slamperboom.backend.dataLogic.services.IControllerDataService;
 import com.slamperboom.backend.dataLogic.services.TaxService;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
-import com.slamperboom.backend.dataLogic.views.taxes.TaxFactorCreateView;
-import com.slamperboom.backend.dataLogic.views.taxes.TaxFactorView;
-import com.slamperboom.backend.dataLogic.views.taxes.TaxView;
+import com.slamperboom.backend.frontendDTO.TaxFactorCreateDTO;
+import com.slamperboom.backend.frontendDTO.TaxFactorDTO;
+import com.slamperboom.backend.frontendDTO.TaxDTO;
 import com.slamperboom.backend.frontendDTO.TaxValueDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,7 +32,7 @@ public class TaxController {
             }
     )
     @GetMapping("values")
-    public List<TaxView> getTaxByName(@RequestParam(name = "taxname") String taxName){
+    public List<TaxDTO> getTaxByName(@RequestParam(name = "taxname") String taxName){
         return taxService.getValuesForTax(taxName);
     }
 
@@ -59,7 +59,7 @@ public class TaxController {
             }
     )
     @GetMapping("tax/factors")
-    public List<TaxFactorView> getFactorsNamesForTax(@RequestParam(name = "taxname") String taxName) {
+    public List<TaxFactorDTO> getFactorsNamesForTax(@RequestParam(name = "taxname") String taxName) {
         return taxService.getFactorsNamesForTax(taxName);
     }
 
@@ -67,15 +67,15 @@ public class TaxController {
             summary = "Save changed tax entity"
     )
     @PostMapping("save")
-    public void saveTax(@RequestBody TaxView taxView){
-        taxService.saveTaxValue(taxView);
+    public void saveTax(@RequestBody TaxDTO taxDTO){
+        taxService.saveTaxValue(taxDTO);
     }
 
     @Operation(
             summary = "Add tax-factor link"
     )
     @PostMapping("tax/factor/add")
-    public void addTaxFactorLink(@RequestBody TaxFactorCreateView taxFactorLinkDTO){
+    public void addTaxFactorLink(@RequestBody TaxFactorCreateDTO taxFactorLinkDTO){
         taxService.saveTaxFactorLink(taxFactorLinkDTO);
     }
 
@@ -92,9 +92,11 @@ public class TaxController {
 
     @Operation(
             summary = "Add data for tax via file",
-            description = "File that you provide must have .csv extension. " +
-                    "First line should be header Date;Value, following lines should contain data like this: " +
-                    "2023-12-31;100.5",
+            description = """
+                     File that you provide must have .csv extension. First line should be header
+                     Date;Value
+                     following lines should contain data like this:
+                     2023-12-31;100.5""",
             parameters = {
                     @Parameter(name = "taxname"),
                     @Parameter(name = "type", description = "Type of tax (TAX or FACTOR)")

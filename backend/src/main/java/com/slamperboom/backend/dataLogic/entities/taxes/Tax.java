@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "taxes")
 @Getter
@@ -18,10 +16,4 @@ public class Tax extends IdEntity {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private TaxType type;
-
-    @Column(name = "date")
-    private Date date;
-
-    @Column(name = "value")
-    private Double value;
 }
