@@ -3,7 +3,7 @@ package com.slamperboom.backend.mathematics.algorithms.predictionAlgorithms;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmParameters;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.algorithms.PredictionAlgorithm;
-import com.slamperboom.backend.mathematics.mathErrors.MRSEError;
+import com.slamperboom.backend.mathematics.mathErrors.errors.MRSEError;
 import com.slamperboom.backend.mathematics.mathErrors.MathError;
 import com.slamperboom.backend.mathematics.resultData.ResultParameter;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;

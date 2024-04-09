@@ -1,5 +1,6 @@
-package com.slamperboom.backend.mathematics.mathErrors;
+package com.slamperboom.backend.mathematics.mathErrors.errors;
 
+import com.slamperboom.backend.mathematics.mathErrors.MathError;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Component
 @Scope(value = "singleton")
-public class MASEError implements MathError{
+public class MASEError implements MathError {
     @Override
     public double calcError(List<Double> reference, List<Double> predicted) {
         BigDecimal MAENaive = BigDecimal.ZERO;

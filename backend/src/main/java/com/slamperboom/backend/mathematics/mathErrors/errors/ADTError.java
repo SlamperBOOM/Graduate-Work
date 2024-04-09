@@ -1,5 +1,6 @@
-package com.slamperboom.backend.mathematics.mathErrors;
+package com.slamperboom.backend.mathematics.mathErrors.errors;
 
+import com.slamperboom.backend.mathematics.mathErrors.MathError;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.springframework.context.annotation.Scope;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Component
 @Scope(value = "singleton")
-public class ADTError implements MathError{
+public class ADTError implements MathError {
     @Override
     public double calcError(List<Double> reference, List<Double> predicted) {
         int dimension = reference.size();
