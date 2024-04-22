@@ -8,6 +8,7 @@ import com.slamperboom.backend.dataLogic.views.predictions.PredictionValueView;
 import com.slamperboom.backend.mathematics.resultData.MathError;
 import com.slamperboom.backend.mathematics.resultData.ResultParameter;
 import com.slamperboom.backend.mathematics.resultData.SeriesValue;
+import com.slamperboom.backend.utils.DateUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class PredictionMapper {
     public PredictionValue fromSeriesToValue(SeriesValue value, Prediction prediction){
         PredictionValue predictionValue = new PredictionValue();
         predictionValue.setPrediction(prediction);
-        predictionValue.setDate(value.date());
+        predictionValue.setDate(DateUtils.parseDateFromString(value.date()));
         predictionValue.setValue(value.value());
         return predictionValue;
     }

@@ -11,6 +11,7 @@ import com.slamperboom.backend.dataLogic.views.taxes.TaxValueView;
 import com.slamperboom.backend.frontendDTO.TaxDTO;
 import com.slamperboom.backend.frontendDTO.TaxFactorCreateDTO;
 import com.slamperboom.backend.frontendDTO.TaxFactorDTO;
+import com.slamperboom.backend.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +35,16 @@ public class TaxService implements IPredictionTaxService{
     }
 
     @Transactional(readOnly = true)
-    public List<TaxDTO> getValuesForTax(String taxName){
+    public List<TaxDTO> getValuesDTOForTax(String taxName){
         Tax tax = getIdByTaxName(taxName);
         return new LinkedList<>(taxValuesRepository.findByTaxOrderByDate(tax)
                 .stream().map(taxMapper::fromTaxAndValueToDTO).toList());
+    }
+
+    protected List<TaxValueView> getValuesForTax(String taxName){
+        Tax tax = getIdByTaxName(taxName);
+        return new LinkedList<>(taxValuesRepository.findByTaxOrderByDate(tax)
+                .stream().map(taxMapper::fromValueToView).toList());
     }
 
     @Transactional(readOnly = true)
@@ -95,8 +102,8 @@ public class TaxService implements IPredictionTaxService{
 
     public void saveTaxValue(TaxDTO taxDTO){
         taxValuesRepository.findById(taxDTO.id()).ifPresent(value -> {
-                    value.setDate(taxDTO.date());
-                    value.setValue(taxDTO.value());
+            value.setDate(DateUtils.parseDateFromString(taxDTO.date()));
+            value.setValue(taxDTO.value());
                 });
     }
 

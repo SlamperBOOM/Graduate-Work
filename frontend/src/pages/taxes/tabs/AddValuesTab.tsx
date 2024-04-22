@@ -103,10 +103,10 @@ export function AddValuesTab() {
                 </Grid>
                 <Grid  item md={6}>
                     <FormControl sx={{width: "50%", mx: 3}}>
-                        <InputLabel id="select-label">Налог</InputLabel>
+                        <InputLabel id="select-label">{currentType === "TAX" ? "Налог" : "Фактор"}</InputLabel>
                         <Select
                             value={currentTax}
-                            label="Налог"
+                            label={currentType === "TAX" ? "Налог" : "Фактор"}
                             labelId='select-label'
                             onChange={(e) => {
                                 setCurrentTax(e.target.value)
@@ -152,7 +152,7 @@ export function AddValuesTab() {
                     alignItems="center"
                     justifyContent="flex-end">
                         <Typography>
-                            Выберите способ добавления данных
+                            Выберите способ добавления данных:
                         </Typography>
                     </Box>
                 </Grid>

@@ -5,7 +5,7 @@ import { useTaxesApi } from '../../hooks/api/useTaxesApi';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { AlgorithmDTO } from '../../DTOs/AlgorithmDTO';
 import { PredictionResultShortView } from './PredictionResultShortView';
-import { ResultDTO } from '../../DTOs/ResultDTO';
+import { PredictionResultDTO } from '../../DTOs/PredictionResultDTO';
 
 export function NewPredictionPage() {
     const predictionApi = usePredictionApi();
@@ -352,6 +352,6 @@ function ResultsNode(props: ResultsNodeProps){
 
 type ResultsNodeProps = {
     resultCode: string,
-    results: ResultDTO[],
+    results: PredictionResultDTO[],
     blockSetter: (node: ReactNode) => void
 }

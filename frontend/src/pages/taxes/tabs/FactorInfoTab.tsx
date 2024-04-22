@@ -4,10 +4,11 @@ import { TaxDTO } from "../../../DTOs/TaxDTO";
 import { Box, Button, Dialog, DialogActions, DialogContentText, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { innerStorageMembers } from "../../../hooks/useUtility";
+import { innerStorageMembers, useUtility } from "../../../hooks/useUtility";
 
 export function FactorInfoTab(){
     const taxesApi = useTaxesApi();
+    const utility = useUtility();
     const [factors, setFactors] = useState<string[]>([]);
     const [currentFactor, setCurrentFactor] = useState(localStorage.getItem(innerStorageMembers.lastTax) ?? "");
     const [values, setValues] = useState<TaxDTO[]>([]);
@@ -16,10 +17,6 @@ export function FactorInfoTab(){
     const [dialogTitle, setDialogTitle] = useState("");
     const [dialogContent, setDialogContent] = useState("");
     const [handleDialog, setHandleDialog] = useState<() => void>();
-
-    useEffect(() => {
-        localStorage.removeItem(innerStorageMembers.lastTax);
-    }, []);
 
     useEffect(() => {
         taxesApi.get.getFactorsNames().then((result) => {
@@ -48,7 +45,6 @@ export function FactorInfoTab(){
                         if(handleDialog){
                             handleDialog();
                         }
-                        localStorage.setItem("data.lastTax", currentFactor); 
                         window.location.reload();
                     }}>Да</Button>
                 </DialogActions>
@@ -65,6 +61,7 @@ export function FactorInfoTab(){
                         label="Фактор"
                         labelId='select-label'
                         onChange={(e) => {
+                            localStorage.setItem(innerStorageMembers.lastTax, e.target.value); 
                             setCurrentFactor(e.target.value)
                         }} 
                     >
@@ -99,7 +96,8 @@ export function FactorInfoTab(){
                         type: "date",
                         flex: 0.4,
                         editable: true,
-                        valueGetter: ({value}) => value && new Date(value),
+                        valueGetter: ({value}) => value && utility.formatStringToDate(value),
+                        valueFormatter: ({value}) => utility.formatDateToString(value),
                         headerAlign: "center",
                         align: "center",
                     },

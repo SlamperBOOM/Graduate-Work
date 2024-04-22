@@ -31,12 +31,12 @@ export function useTaxesApi(){
     }, [api]);
 
     const saveTaxInfo = useCallback(async(body: TaxDTO) => {
-        body.date = utility.formatDate(new Date(body.date));
+        body.date = utility.formatDateToString(new Date(body.date));
         await api.performPostRequest(baseAddress + "save", body);
     }, [api, utility]);
 
     const addTaxValue = useCallback(async(body: TaxValueDTO, type: string) => {
-        body.date = utility.formatDate(new Date(body.date));
+        body.date = utility.formatDateToString(new Date(body.date));
         await api.performPostRequest(baseAddress + "add?type=" + type, body);
     }, [api, utility]);
 

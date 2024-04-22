@@ -6,17 +6,23 @@ export const innerStorageMembers = {
 }
 
 export function useUtility(){
-    const formatDate = useCallback((date: Date) => {
+    const formatDateToString = useCallback((date: Date) => {
         return [
-            date.getFullYear(),
+            date.getDate().toString().padStart(2, '0'),
             (date.getMonth()+1).toString().padStart(2, '0'),
-            date.getDate().toString().padStart(2, '0')
+            date.getFullYear()
         ].join("-");
+    }, []);
+
+    const formatStringToDate = useCallback((date: string) => {
+        const values = date.split("-").map((val) => parseInt(val));
+        return new Date(values[2], values[1]-1, values[0]);
     }, []);
     
     return useMemo(() => {
         return{
-            formatDate
+            formatDateToString,
+            formatStringToDate
         }
-    }, [formatDate])
+    }, [formatDateToString, formatStringToDate])
 }

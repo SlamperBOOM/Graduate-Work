@@ -8,6 +8,7 @@ import com.slamperboom.backend.frontendDTO.TaxFactorCreateDTO;
 import com.slamperboom.backend.frontendDTO.TaxFactorDTO;
 import com.slamperboom.backend.frontendDTO.TaxDTO;
 import com.slamperboom.backend.frontendDTO.TaxValueDTO;
+import com.slamperboom.backend.utils.DateUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +34,7 @@ public class TaxController {
     )
     @GetMapping("values")
     public List<TaxDTO> getTaxByName(@RequestParam(name = "taxname") String taxName){
-        return taxService.getValuesForTax(taxName);
+        return taxService.getValuesDTOForTax(taxName);
     }
 
     @Operation(
@@ -87,7 +88,10 @@ public class TaxController {
     )
     @PostMapping("add")
     public void addTaxValues(@RequestParam("type") String type, @RequestBody TaxValueDTO taxValueDTO){
-        taxService.addTaxValue(new TaxCreateView(taxValueDTO.taxName(), TaxType.valueOf(type), taxValueDTO.date(), taxValueDTO.value()));
+        taxService.addTaxValue(new TaxCreateView(taxValueDTO.taxName(),
+                TaxType.valueOf(type),
+                DateUtils.parseDateFromString(taxValueDTO.date()),
+                taxValueDTO.value()));
     }
 
     @Operation(
@@ -96,7 +100,7 @@ public class TaxController {
                      File that you provide must have .csv extension. First line should be header
                      Date;Value
                      following lines should contain data like this:
-                     2023-12-31;100.5""",
+                     31-12-2023;100.5""",
             parameters = {
                     @Parameter(name = "taxname"),
                     @Parameter(name = "type", description = "Type of tax (TAX or FACTOR)")

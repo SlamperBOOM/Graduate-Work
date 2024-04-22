@@ -8,18 +8,16 @@ import com.slamperboom.backend.exceptions.errorCodes.DataCodes;
 import com.slamperboom.backend.exceptions.errorCodes.PredictionCodes;
 import com.slamperboom.backend.exceptions.exceptions.FileParserException;
 import com.slamperboom.backend.exceptions.exceptions.PredictionException;
-import com.slamperboom.backend.frontendDTO.TaxDTO;
 import com.slamperboom.backend.mathematics.ImplementedEntitiesService;
 import com.slamperboom.backend.mathematics.algorithms.AlgorithmValues;
 import com.slamperboom.backend.mathematics.resultData.MathError;
 import com.slamperboom.backend.mathematics.resultData.PredictionResult;
+import com.slamperboom.backend.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -32,7 +30,7 @@ public class DataService implements IMathDataService, IControllerDataService {
     @Override
     public AlgorithmValues fetchValuesForAlgorithm(String taxName){
         //достаем все значения для налога и его факторов (если есть) и обрезаем до минимального общего диапазона дат
-        List<TaxDTO> taxValues = taxService.getValuesForTax(taxName);
+        List<TaxValueView> taxValues = taxService.getValuesForTax(taxName);
         List<List<TaxValueView>> factorsValues = taxService.getFactorsForTax(taxName);
         List<Date> dates = new LinkedList<>();
         List<Double> reference = new LinkedList<>();
@@ -52,10 +50,10 @@ public class DataService implements IMathDataService, IControllerDataService {
         //в каждом листе будет как минимум один элемент, поэтому минимум/максимум будет всегда
         Date minDate = minimumDates.stream().max(Date::compareTo).orElse(new Date(0));
         Date maxDate = maximumDates.stream().min(Date::compareTo).orElse(new Date(Long.MAX_VALUE));
-        for (TaxDTO taxDTO : taxValues){
-            if(taxDTO.date().compareTo(minDate) >= 0 && taxDTO.date().compareTo(maxDate) <= 0){
-                reference.add(taxDTO.value());
-                dates.add(taxDTO.date());
+        for (TaxValueView valueView : taxValues){
+            if(valueView.date().compareTo(minDate) >= 0 && valueView.date().compareTo(maxDate) <= 0){
+                reference.add(valueView.value());
+                dates.add(valueView.date());
             }
         }
         for(List<TaxValueView> factorValues: factorsValues){
@@ -174,13 +172,12 @@ public class DataService implements IMathDataService, IControllerDataService {
                 if(line.length < 2){
                     throw new FileParserException(DataCodes.wrongFileFormat);
                 }
-                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
                 values.put(
-                        format.parse(line[0]), Double.valueOf(line[1].replace(",", "."))
+                        DateUtils.parseDateFromString(line[0]), Double.valueOf(line[1].replace(",", "."))
                 );
             }
             reader.close();
-        }catch (ParseException | IOException e){
+        }catch (IOException e){
             throw new FileParserException(DataCodes.wrongFileFormat);
         }
         return values;

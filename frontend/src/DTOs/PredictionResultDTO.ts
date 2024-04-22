@@ -1,4 +1,4 @@
-export type ResultDTO = {
+export type PredictionResultDTO = {
     taxName: string,
     methodName: string,
     referenceValues: ValueDTO[],

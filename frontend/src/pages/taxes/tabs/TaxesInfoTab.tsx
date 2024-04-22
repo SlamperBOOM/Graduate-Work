@@ -5,10 +5,11 @@ import { Box, Button, Dialog, DialogActions, DialogContentText, DialogTitle, Div
 import { DataGrid} from "@mui/x-data-grid";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { TaxFactorDTO } from "../../../DTOs/TaxFactorDTO";
-import { innerStorageMembers } from "../../../hooks/useUtility";
+import { innerStorageMembers, useUtility } from "../../../hooks/useUtility";
 
 export function TaxesInfoTab(){
     const taxesApi = useTaxesApi();
+    const utility = useUtility();
     const [taxes, setTaxes] = useState<string[]>([]);
     const [currentTax, setCurrentTax] = 
         useState<string>(localStorage.getItem(innerStorageMembers.lastTax) ?? "");
@@ -27,14 +28,9 @@ export function TaxesInfoTab(){
             taxName: currentTax,
             factorName: factorToLink
         }).then(() => {
-            localStorage.setItem(innerStorageMembers.lastTax, currentTax);
             window.location.reload();
         })
     }, [taxesApi, currentTax, factorToLink]);
-
-    useEffect(() => {
-        localStorage.removeItem(innerStorageMembers.lastTax);
-    }, []);
 
     useEffect(() => {
         taxesApi.get.getTaxesNames().then((result) => {
@@ -70,7 +66,6 @@ export function TaxesInfoTab(){
                         if(handleDialog){
                             handleDialog();
                         }
-                        localStorage.setItem(innerStorageMembers.lastTax, currentTax); 
                         window.location.reload();
                     }}>Да</Button>
                 </DialogActions>
@@ -87,6 +82,7 @@ export function TaxesInfoTab(){
                         label="Налог"
                         labelId='select-label'
                         onChange={(e) => {
+                            localStorage.setItem(innerStorageMembers.lastTax, e.target.value); 
                             setCurrentTax(e.target.value)
                         }} 
                     >
@@ -121,7 +117,8 @@ export function TaxesInfoTab(){
                             type: "date",
                             flex: 0.3,
                             editable: true,
-                            valueGetter: ({value}) => value && new Date(value),
+                            valueGetter: ({value}) => value && utility.formatStringToDate(value),
+                            valueFormatter: ({value}) => utility.formatDateToString(value),
                             headerAlign: "center",
                             align: "center",
                         },

@@ -1,6 +1,7 @@
 package com.slamperboom.backend.mathematics.resultData;
 
 import com.slamperboom.backend.frontendDTO.PredictionResultDTO;
+import com.slamperboom.backend.utils.DateUtils;
 import lombok.*;
 
 import java.util.Date;
@@ -72,7 +73,7 @@ public class PredictionResult {
                                                    List<Double> seriesValues){
         List<SeriesValue> series = new LinkedList<>();
         for(int i=0; i<seriesValues.size(); ++i){
-            series.add(new SeriesValue(dates.get(i), seriesValues.get(i)));
+            series.add(new SeriesValue(DateUtils.formatDateToString(dates.get(i)), seriesValues.get(i)));
         }
         return series;
     }

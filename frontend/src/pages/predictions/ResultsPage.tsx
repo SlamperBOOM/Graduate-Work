@@ -2,7 +2,7 @@ import { Box, Divider, FormControl, InputLabel, MenuItem, Select, Typography } f
 import { SideMenuWrapper } from "../SideMenuWrapper";
 import { useTaxesApi } from "../../hooks/api/useTaxesApi";
 import { ReactNode, useEffect, useState } from "react";
-import { ResultDTO } from "../../DTOs/ResultDTO";
+import { PredictionResultDTO } from "../../DTOs/PredictionResultDTO";
 import { usePredictionApi } from "../../hooks/api/usePredictionApi";
 import { PredictionResultView } from "./PredictionResultView";
 
@@ -12,7 +12,7 @@ export function ResultsPage(props: ResultsPageProps) {
     const predictionApi = usePredictionApi();
     const [taxes, setTaxes] = useState<string[]>([]);
     const [currentTax, setCurrentTax] = useState("");
-    const [results, setResults] = useState<ResultDTO[]>([]);
+    const [results, setResults] = useState<PredictionResultDTO[]>([]);
     const [currentMethod, setCurrentMethod] = useState("");
     const [currentShowingResult, setCurrentShowingResult] = useState<ReactNode>();
 

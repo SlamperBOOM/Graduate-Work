@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useApi } from "./useApi";
 import { AlgorithmDTO } from "../../DTOs/AlgorithmDTO";
 import { PredictionRequestDTO } from "../../DTOs/PredictionRequestDTO";
-import { ResultDTO } from "../../DTOs/ResultDTO";
+import { PredictionResultDTO } from "../../DTOs/PredictionResultDTO";
 import { PredictionForFrontend } from "../../DTOs/PredictionForFrontend";
 import { PredictionConfirmDTO } from "../../DTOs/PredictionConfirmDTO";
 
@@ -23,7 +23,7 @@ export function usePredictionApi(){
     }, [api]);
 
     const getResultsForTax = useCallback(async(taxName: string) => {
-        return (await api.performGetRequest(baseAddress + "predicts/get?taxname=" + taxName)) as ResultDTO[];
+        return (await api.performGetRequest(baseAddress + "predicts/get?taxname=" + taxName)) as PredictionResultDTO[];
     }, [api]);
 
     return useMemo(() => {

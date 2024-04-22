@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Typography } from '@mui/material';
-import { ResultDTO } from '../../DTOs/ResultDTO';
+import { PredictionResultDTO } from '../../DTOs/PredictionResultDTO';
 import { LineChart } from '@mui/x-charts';
 import { DataGrid } from "@mui/x-data-grid";
 import { useCallback } from 'react';
@@ -11,8 +11,8 @@ export function PredictionResultView(props : PredictionResultViewProps) {
 
     const exportToXML = useCallback(() => {
         const resultCopy = result;
-        resultCopy.predictionValues.map((val, i) => {val.date = utils.formatDate(new Date(parseInt(val.date)))});
-        resultCopy.referenceValues.map((val, i) => {val.date = utils.formatDate(new Date(parseInt(val.date)))});
+        resultCopy.predictionValues.map((val, i) => {val.date = utils.formatDateToString(new Date(parseInt(val.date)))});
+        resultCopy.referenceValues.map((val, i) => {val.date = utils.formatDateToString(new Date(parseInt(val.date)))});
         const textFile = new Blob([JSON.stringify(resultCopy, null, 2)], {type: 'application/json'});
 
         const element = document.createElement("a");
@@ -289,5 +289,5 @@ export function PredictionResultView(props : PredictionResultViewProps) {
 };
 
 export type PredictionResultViewProps = {
-    result: ResultDTO
+    result: PredictionResultDTO
 }

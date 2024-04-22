@@ -7,6 +7,7 @@ import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxValueView;
 import com.slamperboom.backend.frontendDTO.TaxDTO;
 import com.slamperboom.backend.frontendDTO.TaxFactorDTO;
+import com.slamperboom.backend.utils.DateUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +16,7 @@ public class TaxMapper {
         return new TaxDTO(value.getId(),
                 value.getTax().getTaxName(),
                 value.getTax().getType(),
-                value.getDate(),
+                DateUtils.formatDateToString(value.getDate()),
                 value.getValue());
     }
 
