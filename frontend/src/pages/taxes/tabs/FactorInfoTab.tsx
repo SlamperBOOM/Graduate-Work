@@ -5,6 +5,7 @@ import { Box, Button, Dialog, DialogActions, DialogContentText, DialogTitle, For
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { innerStorageMembers, useUtility } from "../../../hooks/useUtility";
+import { TaxLineChart } from "../../TaxLineChart";
 
 export function FactorInfoTab(){
     const taxesApi = useTaxesApi();
@@ -45,6 +46,7 @@ export function FactorInfoTab(){
                         if(handleDialog){
                             handleDialog();
                         }
+                        setHandleDialog(() => {});
                         window.location.reload();
                     }}>Да</Button>
                 </DialogActions>
@@ -72,82 +74,108 @@ export function FactorInfoTab(){
                 </FormControl>
             </Box>
             {(currentFactor !== "" && factors.includes(currentFactor)) &&
-            <Box display="flex"
-            flexDirection="column"
-            height="60vh"
-            alignItems="center">
             <Box
-                display="flex"
+            display="flex"
+            flexDirection="column"
+            height="120vh">
+                <Box
+                    height="60vh">
+                    <TaxLineChart values={values} taxName={currentFactor}/>
+                </Box>
+                <Box display="flex"
                 flexDirection="column"
-                justifyContent="center"
-                width="50%"
-                padding={2}
-                height="100%"
-            >
-                <Typography
-                align="center"
-                variant="h5">
-                    Значения налога
-                </Typography>
-                <DataGrid columns={[
-                    {
-                        field: "date",
-                        headerName: "Дата",
-                        type: "date",
-                        flex: 0.4,
-                        editable: true,
-                        valueGetter: ({value}) => value && utility.formatStringToDate(value),
-                        valueFormatter: ({value}) => utility.formatDateToString(value),
-                        headerAlign: "center",
-                        align: "center",
-                    },
-                    {
-                        field: "value",
-                        headerName: "Значение",
-                        flex: 0.6,
-                        type: "number",
-                        editable: true,
-                        headerAlign: "center",
-                        align: "center",
-                    },
-                    {
-                        field: "delete",
-                        headerName: "",
-                        flex: 0.1,
-                        align: "center",
-                        renderCell: (params) => {
-                            const handle = () => taxesApi.delete.deleteTaxValue(params.row.id);
+                height="60vh"
+                alignItems="center">
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        justifyContent="center"
+                        width="50%"
+                        padding={2}
+                        height="100%"
+                    >
+                        <Typography
+                        align="center"
+                        variant="h5">
+                            Значения налога
+                        </Typography>
+                        <DataGrid columns={[
+                            {
+                                field: "date",
+                                headerName: "Дата",
+                                type: "date",
+                                flex: 0.4,
+                                editable: true,
+                                valueGetter: (value: string) => value && utility.formatStringToDate(value),
+                                valueFormatter: (value : Date) => value && utility.formatDateToString(value),
+                                headerAlign: "center",
+                                align: "center",
+                            },
+                            {
+                                field: "value",
+                                headerName: "Значение",
+                                flex: 0.6,
+                                type: "number",
+                                editable: true,
+                                headerAlign: "center",
+                                align: "center",
+                            },
+                            {
+                                field: "delete",
+                                headerName: "",
+                                flex: 0.1,
+                                align: "center",
+                                renderCell: (params) => {
+                                    const handle = () => taxesApi.delete.deleteTaxValue(params.row.id);
 
-                            const onClick = () => {
-                                setDialogTitle("Удаление данных");
-                                setDialogContent("Вы подтверждаете удаление данных фактора " + params.row.taxName + " за " + new Date(params.row.date).toLocaleDateString());
-                                setHandleDialog(() => handle);
-                                setOpen(true);
+                                    const onClick = () => {
+                                        setDialogTitle("Удаление данных");
+                                        setDialogContent("Вы подтверждаете удаление данных фактора " + params.row.taxName + " за " + new Date(params.row.date).toLocaleDateString());
+                                        setHandleDialog(() => handle);
+                                        setOpen(true);
+                                    }
+                                    
+                                    return(
+                                        <IconButton onClick={onClick}>
+                                            <DeleteOutlineIcon/>
+                                        </IconButton>
+                                    )
+                                }
                             }
-                            
-                            return(
-                                <IconButton onClick={onClick}>
-                                    <DeleteOutlineIcon/>
-                                </IconButton>
-                            )
-                        }
-                    }
-                ]}
-                rows={values}
-                sx={{
-                    width: "100%",
-                    alignSelf: "center",
-                    marginTop: 2
-                }}
-                disableRowSelectionOnClick
-                disableColumnMenu
-                hideFooter
-                processRowUpdate={(newRow, oldRow) => {
-                    taxesApi.add.saveTaxInfo(newRow);
-                    return newRow;
-                }}
-                />
-            </Box>
+                        ]}
+                        rows={values}
+                        sx={{
+                            width: "100%",
+                            alignSelf: "center",
+                            marginTop: 2
+                        }}
+                        disableRowSelectionOnClick
+                        disableColumnMenu
+                        hideFooter
+                        processRowUpdate={(newRow, oldRow) => {
+                            taxesApi.add.saveTaxInfo(newRow);
+                            return newRow;
+                        }}
+                        />
+                    </Box>
+                </Box>
+                <Box
+                marginTop={2}
+                display="flex"
+                justifyContent="center">
+                <Button
+                variant="contained"
+                onClick={() => {
+                    setDialogTitle("Удаление данных");
+                    setDialogContent("Вы подтверждаете удаление всех данных фактора " + currentFactor);
+                    setHandleDialog(() => {
+                        taxesApi.delete.deleteAll(currentFactor).then(() => window.location.reload());
+                    });
+                    setOpen(true);
+                }}>
+                    Удалить все данные по фактору
+                </Button>
+                </Box>
             </Box>
             }
         </Box>

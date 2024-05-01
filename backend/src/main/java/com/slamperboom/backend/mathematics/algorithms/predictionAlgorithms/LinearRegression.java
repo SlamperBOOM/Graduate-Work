@@ -16,6 +16,7 @@ import java.util.*;
 @Component
 public class LinearRegression implements PredictionAlgorithm {
     private static final String methodName = "Linear Regression";
+    private static final List<Double> powParams = List.of(1/10., 1/5., 1/4., 1/2., 1., 1.5, 2.);
     private double[] bestWeights;
     private double bestLR;
     private double bestEpochs;
@@ -40,43 +41,26 @@ public class LinearRegression implements PredictionAlgorithm {
             factorsTranspose.add(Arrays.stream(arr).boxed().toList());
         }
         System.out.println(factorsTranspose);
-        double[] weights = new double[factorsCount];
+
         double bestError = Double.MAX_VALUE;
         MathError mathError = new MRSEError();
-        double sigmoidParam = parameters.getParameterValues("sigmoidParam").get(0);
-        double outputErrorParam = parameters.getParameterValues("outputErrorParam").get(0);
-        for(double epochs : parameters.getParameterValues("epochs")){
-            for(double learningRate: parameters.getParameterValues("learningRate")) {
-
-                for(int i=0; i<weights.length; ++i){
-                    weights[i] = Math.random();
-                }
-                for (int k = 0; k < epochs; ++k) {
-                    for (int i = 0; i < references.size(); ++i) {//main body
-                        double referenceValue = sigmoid(references.get(i), sigmoidParam);
-                        List<Double> currentFactors = new ArrayList<>(factorsTranspose.get(i));
-                        double predicted = 0;
-                        for (int j = 0; j < factorsCount; ++j) {
-                            predicted += currentFactors.get(j) * weights[j];
-                        }
-                        double error = outputError(referenceValue, sigmoid(predicted, sigmoidParam), outputErrorParam);
-                        for (int j = 0; j < factorsCount; ++j) {
-                            double adding = error * sigmoidDerivative(predicted, sigmoidParam) * currentFactors.get(j) * learningRate;
-                            weights[j] += adding;
-                        }
+        double sigmoidParam = references.stream().map(Math::abs).max(Double::compare).get();
+        for(double errorParam: powParams) {
+            for (double epochs : parameters.getParameterValues("epochs")) {
+                for (double learningRate : parameters.getParameterValues("learningRate")) {
+                    double[] weights = predict(references, factorsTranspose, sigmoidParam, epochs, learningRate, factorsCount, errorParam);
+                    //сделаем приближение с помощью полученных коэффициентов
+                    List<Double> predicted = new ArrayList<>();
+                    for (List<Double> factorList : factorsTranspose) {
+                        predicted.add(calcNewValueLinear(factorList, weights));
                     }
-                }
-                //сделаем приближение с помощью полученных коэффициентов
-                List<Double> predicted = new ArrayList<>();
-                for(List<Double> factorList: factorsTranspose){
-                    predicted.add(calcNewValueLinear(factorList, weights));
-                }
-                double error = mathError.calcError(references, predicted);
-                if(error < bestError){
-                    bestWeights = weights;
-                    bestEpochs = epochs;
-                    bestLR = learningRate;
-                    bestError = error;
+                    double error = mathError.calcError(references, predicted);
+                    if (error < bestError) {
+                        bestWeights = weights;
+                        bestEpochs = epochs;
+                        bestLR = learningRate;
+                        bestError = error;
+                    }
                 }
             }
         }
@@ -93,6 +77,30 @@ public class LinearRegression implements PredictionAlgorithm {
             predicted.add(calcNewValueLinear(factorList, bestWeights));
         }
         return predicted;
+    }
+
+    private double[] predict(List<Double> references, List<List<Double>> factorsTranspose,
+                             double sigmoidParam, double epochs, double learningRate, int factorsCount, double errorParam){
+        double[] weights = new double[factorsCount];
+        for(int i=0; i<weights.length; ++i){
+            weights[i] = Math.random();
+        }
+        for (int k = 0; k < epochs; ++k) {
+            for (int i = 0; i < references.size(); ++i) {//main body
+                double referenceValue = sigmoid(references.get(i), sigmoidParam);
+                List<Double> currentFactors = new ArrayList<>(factorsTranspose.get(i));
+                double predicted = 0;
+                for (int j = 0; j < factorsCount; ++j) {
+                    predicted += currentFactors.get(j) * weights[j];
+                }
+                double error = outputError(referenceValue, sigmoid(predicted, sigmoidParam), errorParam);
+                for (int j = 0; j < factorsCount; ++j) {
+                    double adding = error * sigmoidDerivative(predicted, sigmoidParam) * currentFactors.get(j) * learningRate;
+                    weights[j] += adding;
+                }
+            }
+        }
+        return weights;
     }
 
     private double sigmoid(double x, double xParam){
@@ -138,23 +146,19 @@ public class LinearRegression implements PredictionAlgorithm {
     @Override
     public List<ResultParameter> getPredictionParameters() {
         List<ResultParameter> parameters = new LinkedList<>();
-        parameters.add(new ResultParameter("Learning rate", bestLR));
-        parameters.add(new ResultParameter("Epochs", bestEpochs));
+        parameters.add(new ResultParameter("Коэффициент обучения", bestLR));
+        parameters.add(new ResultParameter("Количество эпох", bestEpochs));
         for(int i=0; i<bestWeights.length; ++i){
-            parameters.add(new ResultParameter("weight"+(i+1), bestWeights[i]));
+            parameters.add(new ResultParameter("Вес"+(i+1), bestWeights[i]));
         }
         return parameters;
     }
 
     private static class LinearRegressionParameters implements AlgorithmParameters{
         private static final List<String> paramsNames = List.of("Коэффициент обучения (можно перечислить несколько значений через ';')",
-                "Количество эпох обучения (можно перечислить несколько значений через ';')",
-                "Параметр для сигмоиды при экспоненте (больше 1)",
-                "Степень взятия корня при вычислении ошибки в обучении НС (больше 0)");
+                "Количество эпох обучения (можно перечислить несколько значений через ';')");
         private List<Double> learningRateVariants;
         private List<Double> epochs;
-        private List<Double> sigmoidParam;
-        private List<Double> outputErrorParam;
 
         @Override
         public List<String> getParametersNames() {
@@ -165,8 +169,6 @@ public class LinearRegression implements PredictionAlgorithm {
         public void parseParameters(List<String> stringParams) {
             learningRateVariants = Arrays.stream(stringParams.get(0).split(";")).map(Double::parseDouble).toList();
             epochs = Arrays.stream(stringParams.get(1).split(";")).map(Double::parseDouble).toList();
-            sigmoidParam = List.of(Double.parseDouble(stringParams.get(2)));
-            outputErrorParam = List.of(Double.parseDouble(stringParams.get(3)));
         }
 
         @Override
@@ -177,12 +179,6 @@ public class LinearRegression implements PredictionAlgorithm {
                 }
                 case "epochs" -> {
                     return epochs;
-                }
-                case "sigmoidParam" -> {
-                    return sigmoidParam;
-                }
-                case "outputErrorParam" -> {
-                    return outputErrorParam;
                 }
                 default -> {
                     return Collections.emptyList();

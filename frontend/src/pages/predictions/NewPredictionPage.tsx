@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { SideMenuWrapper } from '../SideMenuWrapper';
 import { usePredictionApi } from '../../hooks/api/usePredictionApi';
 import { useTaxesApi } from '../../hooks/api/useTaxesApi';
@@ -6,6 +6,8 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { AlgorithmDTO } from '../../DTOs/AlgorithmDTO';
 import { PredictionResultShortView } from './PredictionResultShortView';
 import { PredictionResultDTO } from '../../DTOs/PredictionResultDTO';
+import { ErrorResponse } from '../../errors/ErrorResponse';
+import { PredictionCodes } from '../../errors/PredictionCodes';
 
 export function NewPredictionPage() {
     const predictionApi = usePredictionApi();
@@ -22,6 +24,11 @@ export function NewPredictionPage() {
     const [requestProcessing, setRequestProcessing] = useState(false);
     const [buttonActive, setButtonActive] = useState(false);
 
+    const [open, setOpen] = useState(false);
+    const [dialogTitle, setDialogTitle] = useState("");
+    const [dialogContent, setDialogContent] = useState("");
+
+
     const makePrediction = useCallback(() => {
         if(currentMethod === "" || currentTax === ""){
             console.log("error");
@@ -35,8 +42,27 @@ export function NewPredictionPage() {
             }).then((result) => {
                 setRequestProcessing(false);
                 setResultNode(<ResultsNode resultCode={result.resultCode} results={result.results} blockSetter={setResultNode}/>);
-            }).catch((error) => {
-                console.log(error);
+            }).catch((error: ErrorResponse) => {
+                setDialogTitle("Ошибка при выполнении прогноза");
+                switch(error.errorCode){
+                    case PredictionCodes.predictionError: {
+                        setDialogContent("Возникла ошибка в вычислениях. Проверьте реализованный алгоритм на корректность");
+                        break;
+                    }
+                    case PredictionCodes.noValues: {
+                        setDialogContent("Нет данных для выбранного налога");
+                        break;
+                    }
+                    case PredictionCodes.wrongParameterFormat: {
+                        setDialogContent("Некорректный формат параметров");
+                        break;
+                    }
+                    default: {
+                        setDialogContent("Конкретная ошибка не распознана");
+                        break;
+                    }
+                }
+                setOpen(true);
                 setRequestProcessing(false);
             });  
         }
@@ -72,6 +98,15 @@ export function NewPredictionPage() {
 
     return (
         <SideMenuWrapper>
+            <Dialog open={open}>
+                <Box px={2}>
+                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogContentText>{dialogContent}</DialogContentText>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => setOpen(false)}>Ок</Button>
+                </DialogActions>
+                </Box>
+            </Dialog>
             <Box
             display="flex"
             flexDirection="column"
@@ -105,21 +140,6 @@ export function NewPredictionPage() {
                 justifyContent="center"
                 my={3}>
                     <FormControl sx={{width: "20%", mx: 3}}>
-                        <InputLabel id="select-label">Алгоритм</InputLabel>
-                        <Select
-                            value={currentMethod}
-                            label="Алгоритм"
-                            labelId='select-label'
-                            onChange={(e) => {
-                                setCurrentMethod(e.target.value)
-                            }} 
-                        >
-                            <MenuItem value=''> <em>Алгоритм</em></MenuItem>
-                            {Object.entries(methods).map(([key, item]) => 
-                                <MenuItem value={item.methodName} key={key}>{item.methodName}</MenuItem>)}
-                        </Select>
-                    </FormControl>
-                    <FormControl sx={{width: "20%", mx: 3}}>
                         <InputLabel id="select-label">Налог</InputLabel>
                         <Select
                             value={currentTax}
@@ -132,6 +152,21 @@ export function NewPredictionPage() {
                             <MenuItem value=''> <em>Налог</em></MenuItem>
                             {Object.entries(taxes).map(([key, item]) => 
                                 <MenuItem value={item} key={key}>{item}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{width: "20%", mx: 3}}>
+                        <InputLabel id="select-label">Алгоритм</InputLabel>
+                        <Select
+                            value={currentMethod}
+                            label="Алгоритм"
+                            labelId='select-label'
+                            onChange={(e) => {
+                                setCurrentMethod(e.target.value)
+                            }} 
+                        >
+                            <MenuItem value=''> <em>Алгоритм</em></MenuItem>
+                            {Object.entries(methods).map(([key, item]) => 
+                                <MenuItem value={item.methodName} key={key}>{item.methodName}</MenuItem>)}
                         </Select>
                     </FormControl>
                 </Box>
@@ -268,7 +303,7 @@ function ResultsNode(props: ResultsNodeProps){
                 props.blockSetter(<></>);
             });
         }
-    }, [predictionApi, props, prediction]);
+    }, [predictionApi, props]);
 
     return(
         <Box 

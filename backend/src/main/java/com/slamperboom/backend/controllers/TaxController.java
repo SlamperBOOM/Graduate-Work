@@ -4,6 +4,8 @@ import com.slamperboom.backend.dataLogic.entities.taxes.TaxType;
 import com.slamperboom.backend.dataLogic.services.IControllerDataService;
 import com.slamperboom.backend.dataLogic.services.TaxService;
 import com.slamperboom.backend.dataLogic.views.taxes.TaxCreateView;
+import com.slamperboom.backend.exceptions.errorCodes.TaxCreationCodes;
+import com.slamperboom.backend.exceptions.exceptions.TaxCreationException;
 import com.slamperboom.backend.frontendDTO.TaxFactorCreateDTO;
 import com.slamperboom.backend.frontendDTO.TaxFactorDTO;
 import com.slamperboom.backend.frontendDTO.TaxDTO;
@@ -110,6 +112,9 @@ public class TaxController {
     public void addTaxValuesViaFile(@RequestParam("file") MultipartFile file,
                                     @RequestParam("taxname") String taxName,
                                     @RequestParam("type") String type){
+        if(taxName.isEmpty()){
+            throw new TaxCreationException(TaxCreationCodes.emptyTaxName);
+        }
         if(type.equals(TaxType.TAX.toString())) {
             dataService.parseFileAndAddTaxValues(file, taxName);
         }else{
@@ -126,6 +131,17 @@ public class TaxController {
     @DeleteMapping("delete")
     public void deleteTaxValue(@RequestParam("recordid") String id){
         taxService.deleteTaxValue(Long.parseLong(id));
+    }
+
+    @Operation(
+            summary = "Delete all tax values by tax name",
+            parameters = {
+                    @Parameter(name = "taxname", description = "Name of tax which you want to delete")
+            }
+    )
+    @DeleteMapping("deleteall")
+    public void deleteAllTaxValue(@RequestParam("taxname") String taxName){
+        taxService.deleteAll(taxName);
     }
 
     @Operation(

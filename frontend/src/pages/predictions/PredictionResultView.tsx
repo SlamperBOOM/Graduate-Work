@@ -7,19 +7,19 @@ import { useUtility } from '../../hooks/useUtility';
 
 export function PredictionResultView(props : PredictionResultViewProps) {
     const result = props.result;
-    const utils = useUtility();
+    const utility = useUtility();
 
     const exportToXML = useCallback(() => {
         const resultCopy = result;
-        resultCopy.predictionValues.map((val, i) => {val.date = utils.formatDateToString(new Date(parseInt(val.date)))});
-        resultCopy.referenceValues.map((val, i) => {val.date = utils.formatDateToString(new Date(parseInt(val.date)))});
+        resultCopy.predictionValues.map((val, i) => {val.date = utility.formatDateToString(new Date(parseInt(val.date)))});
+        resultCopy.referenceValues.map((val, i) => {val.date = utility.formatDateToString(new Date(parseInt(val.date)))});
         const textFile = new Blob([JSON.stringify(resultCopy, null, 2)], {type: 'application/json'});
 
         const element = document.createElement("a");
         element.href = URL.createObjectURL(textFile);
         element.download = resultCopy.taxName + "_" + resultCopy.methodName + "_prediction.json";
         element.click();
-    }, [result, utils]);
+    }, [result, utility]);
 
     return (
         <Box
@@ -29,7 +29,7 @@ export function PredictionResultView(props : PredictionResultViewProps) {
             padding: 2,
             display: "flex",
             flexDirection: "column",
-            height: "170vh"
+            height: "180vh"
         }}>
             <Typography
                 variant='h4'
@@ -54,26 +54,30 @@ export function PredictionResultView(props : PredictionResultViewProps) {
             >
                 Значения
             </Typography>
-            <LineChart
-                xAxis={[{
-                    data: result.predictionValues.map((v) => new Date(v.date)),
-                    scaleType: "time"
-                }]}
-                series={[{
-                    data: result.predictionValues.map((v) => v.value),
-                    label: "Прогнозные значения",
-                    color: "blue"
-                },{
-                    data: result.referenceValues.map((v) => v.value),
-                    label: "Оригинальные значения",
-                    color: "red"
-                }]}
-                sx={{
-                    alignSelf: "center",
-                    backgroundColor: 'white',
-                    borderRadius: 2
-                }}
-            />
+            <Box
+                height={"60vh"}>
+                <LineChart
+                    xAxis={[{
+                        data: result.predictionValues.map((v) => new Date(v.date)),
+                        scaleType: "time"
+                    }]}
+                    series={[{
+                        data: result.predictionValues.map((v) => v.value),
+                        label: "Прогнозные значения",
+                        color: "blue"
+                    },{
+                        data: result.referenceValues.map((v) => v.value),
+                        label: "Оригинальные значения",
+                        color: "red"
+                    }]}
+                    grid={{horizontal: true}}
+                    sx={{
+                        alignSelf: "center",
+                        backgroundColor: 'white',
+                        borderRadius: 2
+                    }}
+                />
+            </Box>
             <Box
             display="flex"
             flexDirection="row"
@@ -99,7 +103,8 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             type: "date",
                             flex: 0.4,
                             editable: false,
-                            valueGetter: ({value}) => value && new Date(value),
+                            valueGetter: (value: string) => value && utility.formatStringToDate(value),
+                            valueFormatter: (value: Date) => value && utility.formatDateToString(value),
                             headerAlign: "center",
                             align: "center",
                         },
@@ -142,7 +147,8 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             type: "date",
                             flex: 0.4,
                             editable: false,
-                            valueGetter: ({value}) => value && new Date(value),
+                            valueGetter: (value: string) => value && utility.formatStringToDate(value),
+                            valueFormatter: (value: Date) => value && utility.formatDateToString(value),
                             headerAlign: "center",
                             align: "center",
                         },
@@ -215,7 +221,7 @@ export function PredictionResultView(props : PredictionResultViewProps) {
                             editable: false,
                             headerAlign: "center",
                             align: "center",
-                            valueGetter: ({value}) => value === null ? "" : (value ? "Лучше" : "Хуже"),
+                            valueGetter: (value: boolean | null) => value === null ? "" : (value ? "Лучше" : "Хуже"),
                         }
                     ]}
                     rows={result.mathErrors.map((v, i) => ({

@@ -50,6 +50,10 @@ export function useTaxesApi(){
         await api.performDeleteRequest(baseAddress + "delete?recordid=" + id);
     }, [api]);
 
+    const deleteAll = useCallback(async(taxName: string) => {
+        await api.performDeleteRequest(baseAddress + "deleteall?taxname=" + taxName);
+    }, [api]);
+
     const deleteTaxFactorLink = useCallback(async(id: number) => {
         await api.performDeleteRequest(baseAddress + "tax/factor/delete?linkid=" + id);
     }, [api]);
@@ -70,11 +74,12 @@ export function useTaxesApi(){
             },
             delete: {
                 deleteTaxValue,
-                deleteTaxFactorLink
+                deleteTaxFactorLink,
+                deleteAll
             }
         }
     },[fetchValuesForTax, getTaxesNames, getFactorsForTax, 
         getFactorsNames, addFactorLink, saveTaxInfo, 
         addTaxValue, addTaxValueViaFile, deleteTaxValue, 
-        deleteTaxFactorLink]);
+        deleteTaxFactorLink, deleteAll]);
 }

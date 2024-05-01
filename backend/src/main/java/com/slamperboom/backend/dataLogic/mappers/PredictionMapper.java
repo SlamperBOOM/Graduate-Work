@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -22,15 +23,8 @@ public class PredictionMapper {
         return new PredictionValueView(value.getPrediction().getMethodName(), value.getDate(), value.getValue());
     }
 
-    public List<ResultParameter> fromParameterToDTO(String parameter){
-        if(parameter.isEmpty()){
-            return Collections.emptyList();
-        }else {
-            return Arrays.stream(parameter.split(";")).map(param -> {
-                String[] split = param.split("=");
-                return new ResultParameter(split[0], Double.parseDouble(split[1]));
-            }).toList();
-        }
+    public ResultParameter fromParameterToDTO(PredictionParameter parameter){
+        return new ResultParameter(parameter.getParameterName(), parameter.getValue());
     }
 
     public MathError fromErrorToDTO(PredictionError error){
@@ -53,14 +47,15 @@ public class PredictionMapper {
         return predictionValue;
     }
 
-    public PredictionParameter fromDTOToPredictionParameter(Prediction prediction, List<ResultParameter> resultParameters){
-        PredictionParameter parameter = new PredictionParameter();
-        parameter.setPrediction(prediction);
-        StringBuilder builder = new StringBuilder(255);
+    public List<PredictionParameter> fromDTOToPredictionParameter(Prediction prediction, List<ResultParameter> resultParameters){
+        List<PredictionParameter> parameters = new LinkedList<>();
         for(ResultParameter resultParameter: resultParameters){
-            builder.append(resultParameter.paramName()).append("=").append(resultParameter.value()).append(";");
+            PredictionParameter param = new PredictionParameter();
+            param.setPrediction(prediction);
+            param.setParameterName(resultParameter.paramName());
+            param.setValue(resultParameter.value());
+            parameters.add(param);
         }
-        parameter.setParameters(builder.toString());
-        return parameter;
+        return parameters;
     }
 }

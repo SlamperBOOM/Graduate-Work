@@ -27,9 +27,9 @@ public class AlgorithmValues {
         this.reference = reference;
     }
 
-    public AlgorithmValues(List<Date> dates, List<Double> reference) {
-        this.dates = dates;
+    public AlgorithmValues(List<Double> reference, List<List<Double>> factors){
         this.reference = reference;
+        this.factors = factors;
     }
 
     public AlgorithmValues(List<Date> dates, List<Double> reference, List<List<Double>> factors) {

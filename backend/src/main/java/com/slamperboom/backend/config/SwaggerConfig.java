@@ -18,7 +18,7 @@ public class SwaggerConfig {
         server.setDescription("Backend address");
 
         Contact contact = new Contact();
-        contact.setName("V.Shinkevich (SlamperBOOM)");
+        contact.setName("V. Shinkevich (SlamperBOOM)");
         contact.setEmail("slavashink@gmail.com");
 
         Info info = new Info();

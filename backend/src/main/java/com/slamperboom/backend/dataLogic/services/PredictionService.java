@@ -50,10 +50,8 @@ public class PredictionService {
 
     @Transactional(readOnly = true)
     public List<ResultParameter> getParametersForPrediction(String taxName, String methodName){
-        String result;
         Prediction prediction = getIdByTaxAndMethod(taxName, methodName);
-        result = predictionParametersRepository.findParamByPrediction(prediction).orElse("");
-        return predictionMapper.fromParameterToDTO(result);
+        return predictionParametersRepository.findByPrediction(prediction).stream().map(predictionMapper::fromParameterToDTO).toList();
     }
 
     @Transactional(readOnly = true)
@@ -98,8 +96,8 @@ public class PredictionService {
         Tax tax = taxService.getTaxByTaxName(taxName);
         var prediction = predictionsRepository.findByTaxAndMethod(tax, methodName).get();
         predictionParametersRepository.findByPrediction(prediction)
-                .ifPresent(predictionParametersRepository::delete);
+                .forEach(predictionParametersRepository::delete);
         predictionParametersRepository.flush();
-        predictionParametersRepository.save(predictionMapper.fromDTOToPredictionParameter(prediction, parameters));
+        predictionParametersRepository.saveAll(predictionMapper.fromDTOToPredictionParameter(prediction, parameters));
     }
 }

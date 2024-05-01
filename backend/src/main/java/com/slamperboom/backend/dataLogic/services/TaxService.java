@@ -29,27 +29,22 @@ public class TaxService implements IPredictionTaxService{
     private final TaxFactorRepository taxFactorRepository;
     private final TaxMapper taxMapper;
 
-    private Tax getIdByTaxName(String taxName){
-        var tax = taxRepository.findByTaxName(taxName);
-        return tax.orElse(null);
-    }
-
     @Transactional(readOnly = true)
     public List<TaxDTO> getValuesDTOForTax(String taxName){
-        Tax tax = getIdByTaxName(taxName);
+        Tax tax = taxRepository.findByTaxName(taxName).orElse(null);
         return new LinkedList<>(taxValuesRepository.findByTaxOrderByDate(tax)
                 .stream().map(taxMapper::fromTaxAndValueToDTO).toList());
     }
 
     protected List<TaxValueView> getValuesForTax(String taxName){
-        Tax tax = getIdByTaxName(taxName);
+        Tax tax = taxRepository.findByTaxName(taxName).orElse(null);
         return new LinkedList<>(taxValuesRepository.findByTaxOrderByDate(tax)
                 .stream().map(taxMapper::fromValueToView).toList());
     }
 
     @Transactional(readOnly = true)
     public List<TaxFactorDTO> getFactorsNamesForTax(String taxName){
-        Tax tax = getIdByTaxName(taxName);
+        Tax tax = taxRepository.findByTaxName(taxName).orElse(null);
         return new LinkedList<>(taxFactorRepository.findByTax(tax)
                 .stream().map(taxMapper::fromTaxFactorToView).toList());
     }
@@ -66,7 +61,7 @@ public class TaxService implements IPredictionTaxService{
     @Transactional(readOnly = true)
     public List<List<TaxValueView>> getFactorsForTax(String taxName){
         List<List<TaxValueView>> factorsForTax = new LinkedList<>();
-        Tax tax = getIdByTaxName(taxName);
+        Tax tax = taxRepository.findByTaxName(taxName).orElse(null);
         List<TaxFactor> factors = new LinkedList<>(taxFactorRepository.findByTax(tax));
         for(TaxFactor factorLink: factors){
             factorsForTax.add(taxValuesRepository.findByTaxOrderByDate(factorLink.getFactor())
@@ -86,6 +81,7 @@ public class TaxService implements IPredictionTaxService{
         taxValuesRepository.save(taxMapper.fromCreateToValue(createView, tax.get()));
     }
 
+    @Transactional
     public void addTaxValueViaList(List<TaxCreateView> createViews){
         String taxName = createViews.get(0).taxName();
         var tax = taxRepository.findByTaxName(taxName);
@@ -122,6 +118,11 @@ public class TaxService implements IPredictionTaxService{
         taxValuesRepository.deleteById(id);
     }
 
+    public void deleteAll(String taxName){
+        Tax tax = taxRepository.findByTaxName(taxName).orElse(null);
+        taxValuesRepository.deleteAllByTax(tax);
+    }
+
     public void deleteTaxFactorLink(long id){
         taxFactorRepository.deleteById(id);
     }
@@ -129,7 +130,6 @@ public class TaxService implements IPredictionTaxService{
     @Override
     @Transactional(readOnly = true)
     public Tax getTaxByTaxName(String taxName) {
-        var tax = taxRepository.findByTaxName(taxName);
-        return tax.orElse(null);
+        return taxRepository.findByTaxName(taxName).orElse(null);
     }
 }

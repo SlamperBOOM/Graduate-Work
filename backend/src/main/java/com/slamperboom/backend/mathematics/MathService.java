@@ -23,7 +23,11 @@ public class MathService {
         //парсим параметры
         PredictionAlgorithm algorithm = implementedEntitiesService.getAlgorithmByName(methodName);
         AlgorithmParameters parameters = algorithm.getParameters();
-        parameters.parseParameters(params);
+        try {
+            parameters.parseParameters(params);
+        }catch (Exception e){
+            throw new PredictionException(PredictionCodes.wrongParameterFormat);
+        }
         AlgorithmValues values = dataService.fetchValuesForAlgorithm(taxName);
         //делаем прогноз
         List<Double> prediction;
@@ -60,7 +64,7 @@ public class MathService {
         //собираем ResultDTOs
         List<PredictionResult> results = new ArrayList<>();
         results.add(PredictionResult.createInstanceFromRawWithErrors(taxName,
-                methodName, values.getDates(), values.getReference(),
+                methodName, dates, values.getReference(),
                 prediction, predictionErrors, algorithm.getPredictionParameters()));
         List<PredictionResult> otherResults = dataService.fetchResultsForTax(values, taxName);
         for(PredictionResult predictionResult : otherResults){

@@ -34,15 +34,17 @@ public class ARIMA implements PredictionAlgorithm {
         for(int p = 0; p <= maxP; ++p){
             for(int q = 0; q <= maxQ; ++q){
                 //Сделать различные проверки, чтобы не прогонять невозможные варианты
-                List<Double> prediction = makePrediction(values, p, q);
-                double currentError = mse.calcError(values, prediction);
-                if(mse.compareTo(currentError, bestMSE)){
-                    bestMSE = currentError;
-                    bestPredict = prediction;
-                    bestP = p;
-                    bestQ = q;
-                    bestD = currentD;
-                }
+                try {
+                    List<Double> prediction = makePrediction(values, p, q);
+                    double currentError = mse.calcError(values, prediction);
+                    if (mse.compareTo(currentError, bestMSE)) {
+                        bestMSE = currentError;
+                        bestPredict = prediction;
+                        bestP = p;
+                        bestQ = q;
+                        bestD = currentD;
+                    }
+                }catch (Exception ignored){}
             }
         }
         return bestPredict;
@@ -57,10 +59,10 @@ public class ARIMA implements PredictionAlgorithm {
         //Вычислять коэффициенты для модели AR и считать AR часть
 
         List<Double> arPart = arPart(workList, p);
-        System.out.println(arPart);
+        System.out.println("AR part: " + arPart);
         //Вычислять MA часть
         List<Double> maPart = maPart(workList, q);
-        System.out.println(maPart);
+        System.out.println("MA part: " + maPart);
 
         //Сложить все и вернуть к изначальному варианту
         return getResult(arPart, maPart, timeSeries);
@@ -130,13 +132,13 @@ public class ARIMA implements PredictionAlgorithm {
         }
         coeffs = MatrixUtils.inverse(matrixX.transpose().multiply(matrixX))
                 .multiply(matrixX.transpose()).operate(vectorY).toArray();
-        System.out.println(Arrays.toString(coeffs));
+        System.out.println("AR coeffs: " + Arrays.toString(coeffs));
 
         List<Double> copyOfWorkList = new ArrayList<>(workList);
         for(int i=1; i<=p; ++i){
             copyOfWorkList.add(0, calcPrevSeriesValue(coeffs, i));
         }
-        System.out.println(copyOfWorkList);
+        System.out.println("All workList: " + copyOfWorkList);
         List<Double> arPart = new ArrayList<>();
         for(int i=p-1; i<copyOfWorkList.size(); ++i){
             double val = coeffs[0];
@@ -175,6 +177,7 @@ public class ARIMA implements PredictionAlgorithm {
         }
 
         List<Double> maPart = new ArrayList<>();
+        q = Math.min(q, workList.size());
         List<Double> workingSubList = new LinkedList<>(workList.subList(0, q));
         double mean = mean(workingSubList);
 

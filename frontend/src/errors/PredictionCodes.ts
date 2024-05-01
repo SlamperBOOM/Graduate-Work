@@ -1,4 +1,5 @@
 export enum PredictionCodes{
     predictionError = "predictionError",
-    noValues = "noValues"
+    noValues = "noValues",
+    wrongParameterFormat = "wrongParameterFormat"
 }

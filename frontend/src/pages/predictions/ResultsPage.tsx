@@ -78,7 +78,8 @@ export function ResultsPage(props: ResultsPageProps) {
                             label="Налог"
                             labelId='select-label'
                             onChange={(e) => {
-                                setCurrentTax(e.target.value)
+                                setCurrentTax(e.target.value);
+                                setCurrentMethod("");
                             }} 
                         >
                             <MenuItem value=''> <em>Налог</em></MenuItem>

@@ -37,7 +37,8 @@ export function MainPage() {
                     border: 1,
                     borderRadius: 2,
                     padding: 2,
-                    marginRight: 1
+                    marginRight: 1,
+                    width: "30%"
                 }}>
                     <Typography
                         align="center"
@@ -48,38 +49,79 @@ export function MainPage() {
                     align="center"
                     variant="body1"
                     whiteSpace="break-spaces">
-                        
+                        На этой странице вы можете выполнить прогноз налогов с помощью различных алгоритмов
                     </Typography>
+                    <Box
+                    marginTop={2}
+                    display="flex"
+                    justifyContent="center">
                     <Button
-                    variant="contained">
+                    variant="contained"
+                    onClick={route.routeToPredictionPage}>
                         Перейти к получению прогноза
                     </Button>
+                    </Box>
                 </Box>
                 <Box
                 sx={{
                     border: 1,
                     borderRadius: 2,
                     padding: 2,
-                    mx: 1
+                    mx: 1,
+                    width: "30%"
                 }}>
                     <Typography
                         align="center"
                         variant="h5">
                         Просмотр результатов
                     </Typography>
+                    <Typography
+                    align="center"
+                    variant="body1"
+                    whiteSpace="break-spaces">
+                        {"На этой странице вы можете посмотреть результаты выполненных прогнозов и связанные с ними параметры"}
+                    </Typography>
+                    <Box
+                    marginTop={2}
+                    display="flex"
+                    justifyContent="center">
+                    <Button
+                    variant="contained"
+                    onClick={route.routeToResultsPage}
+                    sx={{alignSelf: "center"}}>
+                        Перейти к просмотру результатов
+                    </Button>
+                    </Box>
                 </Box>
                 <Box
                 sx={{
                     border: 1,
                     borderRadius: 2,
                     padding: 2,
-                    marginLeft: 1
+                    marginLeft: 1,
+                    width: "30%"
                 }}>
                     <Typography
                         align="center"
                         variant="h5">
                         Просмотр данных
                     </Typography>
+                    <Typography
+                    align="center"
+                    variant="body1"
+                    whiteSpace="break-spaces">
+                        {"На этой странице вы можете посмотреть данные по налогам и факторам, а также изменить или добавить новые данные"}
+                    </Typography>
+                    <Box
+                    marginTop={2}
+                    display="flex"
+                    justifyContent="center">
+                    <Button
+                    variant="contained"
+                    onClick={route.routeToTaxesPage}>
+                        Перейти к просмотру данных
+                    </Button>
+                    </Box>
                 </Box>
             </Box>
         </Box>

@@ -90,10 +90,22 @@ public class DataService implements IMathDataService, IControllerDataService {
         }
         for(List<PredictionValueView> prediction: predictions){
             String methodName = prediction.get(0).methodName();
-            List<Date> dates = prediction.stream().map(PredictionValueView::date).toList();
-            List<Double> predictionValues = prediction.stream().map(PredictionValueView::value).toList();
+            List<Date> predictionDates = prediction.stream().map(PredictionValueView::date).toList();
+            Date minimum = values.getDates().get(0).compareTo(predictionDates.get(0)) < 0 ? predictionDates.get(0) : values.getDates().get(0);
+            List<Double> predictionValues = new LinkedList<>();
+            List<Double> ref = new LinkedList<>();
+            for(var predVal: prediction) {
+                if(predVal.date().compareTo(minimum) >= 0) {
+                    predictionValues.add(predVal.value());
+                }
+            }
+            for(var refVal: taxService.getValuesForTax(taxName)) {
+                if(refVal.date().compareTo(minimum) >= 0) {
+                    ref.add(refVal.value());
+                }
+            }
             predictionResultDTOlist.add(PredictionResult.createInstanceFromRawWithoutErrors(taxName,
-                    methodName, dates, values.getReference(),
+                    methodName, predictionDates, ref,
                     predictionValues, predictionService.getParametersForPrediction(taxName, methodName)));
         }
         return predictionResultDTOlist;

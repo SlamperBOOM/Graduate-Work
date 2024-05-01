@@ -14,6 +14,9 @@ public class PredictionParameter extends IdEntity {
     @ManyToOne(targetEntity = Prediction.class, fetch = FetchType.LAZY)
     private Prediction prediction;
 
-    @Column(name = "params")
-    private String parameters;
+    @Column(name = "parameter_name")
+    private String parameterName;
+
+    @Column(name = "value")
+    private Double value;
 }

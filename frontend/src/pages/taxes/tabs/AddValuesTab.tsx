@@ -1,6 +1,9 @@
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContentText, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useTaxesApi } from "../../../hooks/api/useTaxesApi";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ErrorResponse } from "../../../errors/ErrorResponse";
+import { DataCodes } from "../../../errors/DataCodes";
+import { TaxCreationCodes } from "../../../errors/TaxCreationCodes";
 
 export function AddValuesTab() {
     const taxesApi = useTaxesApi();
@@ -14,6 +17,10 @@ export function AddValuesTab() {
     const [newDate, setNewDate] = useState("");
     const [newValue, setNewValue] = useState("");
     const [file, setFile] = useState<File | undefined>();
+
+    const [open, setOpen] = useState(false);
+    const [dialogTitle, setDialogTitle] = useState("");
+    const [dialogContent, setDialogContent] = useState("");
 
     useEffect(() => {
         taxesApi.get.getTaxesNames().then((result) => {
@@ -44,15 +51,50 @@ export function AddValuesTab() {
 
     const addValuesViaFile = useCallback(() => {
         if(file){
-            taxesApi.add.addTaxValueViaFile(currentTax, currentType, file);
+            taxesApi.add.addTaxValueViaFile(currentTax === "" ? newTax : currentTax, currentType, file)
+            .then(() => window.location.reload())
+            .catch((error : ErrorResponse) => {
+                switch(error.errorCode){
+                    case DataCodes.emptyFile: {
+                        setDialogTitle("Ошибка в парсинге файла");
+                        setDialogContent("Был предоставлен пустой файл");
+                        break;
+                    }
+                    case DataCodes.wrongFileFormat: {
+                        setDialogTitle("Ошибка в парсинге файла");
+                        setDialogContent("Неправильный формат данных в файле");
+                        break;
+                    }
+                    case TaxCreationCodes.emtpyTaxName: {
+                        setDialogTitle("Ошибка при добавлении данных");
+                        setDialogContent("Нельзя создать налог с пустым именем");
+                        break;
+                    }
+                    default: {
+                        setDialogTitle("Ошибка при добавлении данных");
+                        setDialogContent("Конкретная ошибка не распознана");
+                        break;
+                    }
+                }
+                setOpen(true);
+            });
         }
-    }, [taxesApi, currentTax, currentType, file]);
+    }, [taxesApi, currentTax, currentType, file, newTax]);
 
     return (
         <Box
         display="flex"
         flexDirection="column"
         justifyContent="center">
+            <Dialog open={open}>
+                <Box px={2}>
+                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogContentText>{dialogContent}</DialogContentText>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => setOpen(false)}>Ок</Button>
+                </DialogActions>
+                </Box>
+            </Dialog>
             <Grid container
             display="flex"
             justifyContent="center"
@@ -139,7 +181,11 @@ export function AddValuesTab() {
                     <Grid item md={6}>
                         <TextField sx={{width: "50%", mx: 3}} 
                         value={newTax} 
-                        onChange={(e) => setNewTax(e.target.value)}/>
+                        onChange={(e) => setNewTax(e.target.value)}
+                        helperText={(currentType === "TAX" ? !taxes.includes(newTax) : !factors.includes(newTax)) ? "" : 
+                            ("Такой " + (currentType === "TAX" ? "налог" : "фактор") + 
+                            " уже существует. Данные добавятся к существующему " + (currentType === "TAX" ? "налогу" : "фактору"))}
+                        error={currentType === "TAX" ? taxes.includes(newTax) : factors.includes(newTax)}/>
                     </Grid>
                 </>
                 }
@@ -235,7 +281,7 @@ export function AddValuesTab() {
                     }}>
                         <Typography whiteSpace="break-spaces">
                             Принимаются файлы формата .csv с разделителем ";". Первая строка должна содержать названия столбцов.{"\n"}
-                            Должно быть 2 столбца с датой и значением. Дата должна быть в формате "31.12.2023". Количество значений не ограничено.
+                            Должно быть 2 столбца с датой и значением. Дата должна быть в формате "31-12-2023". Количество значений не ограничено.
                         </Typography>
                     </Box>
                 </Grid>
